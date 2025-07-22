@@ -4,15 +4,32 @@ package tankgame.menus;
 import tankgame.Launcher;
 
 import javax.imageio.ImageIO;
+import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class StartMenuPanel extends JPanel {
 
     private BufferedImage menuBackground;
     private final Launcher lf;
+
+    // Flyweight pattern : move these resource factories to Resource Manager Singleton TODO
+    private static final Map<String, BufferedImage> images = new HashMap<>();
+    private static final Map<String, Clip> sounds = new HashMap<>(); // each clip is a thread, sounds and animations are for collisions
+    private static final Map<String, List<BufferedImage>> animations = new HashMap<>();
+    private static final Map<String, ResourceFactory<?>> factories = new HashMap<>();
+    public static void loadSprites(){}
+    public static void loadSounds(){}
+    public static void loadAnimations(){}
+    interface ResourceFactory<T> {
+        void load(String path);
+    }
+
+
 
     public StartMenuPanel(Launcher lf) {
         this.lf = lf;

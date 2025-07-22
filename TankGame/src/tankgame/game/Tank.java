@@ -15,14 +15,14 @@ public class Tank{
 
     private float x;
     private float y;
-    private float vx;
-    private float vy;
+    private float vx; // useful for simple approach to collisions, velocity x distance traveled over time
+    private float vy; // useful for simple approach to collisions, velocity y
 
-    private float angle;
-    private float R = 5;
+    private float angle; // direction tank is facing - make sure all assets facing same way
+    private float R = 5; // speed
     private float ROTATIONSPEED = 3.0f;
 
-    private BufferedImage img;
+    private BufferedImage img; // don't want it static atm because need two tanks that look different
 
 
     Tank(float x, float y, float vx, float vy, float angle, BufferedImage img) {
@@ -45,6 +45,7 @@ public class Tank{
     public void released(Direction dir) {
         keysPressed.remove(dir);
     }
+
     void update() {
        if (this.keysPressed.contains(Direction.UP)) {
             this.moveForwards();
@@ -84,7 +85,7 @@ public class Tank{
         checkBorder();
     }
 
-
+    // should be GAME_WORLD_HEIGHT, don't go off the world especially during split screen
     private void checkBorder() {
         if (x < 30) {
             x = 30;
@@ -101,7 +102,7 @@ public class Tank{
     }
 
     void drawImage(Graphics g) {
-        AffineTransform rotation = AffineTransform.getTranslateInstance(x, y);
+        AffineTransform rotation = AffineTransform.getTranslateInstance(x, y); // allows movement to x.y and draw without casting positions to ints
         rotation.rotate(Math.toRadians(angle), this.img.getWidth() / 2.0, this.img.getHeight() / 2.0);
         Graphics2D g2d = (Graphics2D) g;
         g2d.drawImage(this.img, rotation, null);

@@ -3,7 +3,7 @@ package tankgame;
 import java.awt.RenderingHints;
 import java.util.HashMap;
 import java.util.Map;
-
+// don't go bigger than 1080p
 public class GameConstants {
     public static final int GAME_SCREEN_WIDTH = 1280;
     public static final int GAME_SCREEN_HEIGHT = 960;

@@ -6,9 +6,11 @@ import tankgame.menus.StartMenuPanel;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowEvent;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class Launcher {
-
+//    ConcurrentMap<Integer,GameWorld> map = new ConcurrentHashMap<Integer, GameWorld>();
     /*
      * Main panel in JFrame, the layout of this panel
      * will be card layout, this will allow us to switch
@@ -56,7 +58,7 @@ public class Launcher {
          * two buttons restart and exit.
          */
         JPanel endPanel = new EndGamePanel(this);
-        cl = new CardLayout(); // creating a new CardLayout Panel
+        cl = new CardLayout(); // creating a new CardLayout Panel, allows us to put panels on top of each other
         this.mainPanel.setLayout(cl); // set the layout of the main panel to our card layout
         this.mainPanel.add(startPanel, "start"); // add the start panel to the main panel
         this.mainPanel.add(gamePanel, "game"); // add the game panel to the main panel
@@ -72,6 +74,7 @@ public class Launcher {
      */
     public void setFrame(String type) {
         this.jf.setVisible(false); // hide the JFrame
+        // thse width/height resolutions will change to account for minimap
         switch (type) {
             case "start" -> {
                 this.jf.setSize(GameConstants.START_MENU_SCREEN_WIDTH, GameConstants.START_MENU_SCREEN_HEIGHT);

@@ -52,7 +52,8 @@ public class GameWorld extends JPanel implements Runnable {
 
     /**
      * Load all resources for Tank Wars Game. Set all Game Objects to their
-     * initial state as well.
+     * initial state as well. // thse width/height resolutions will change to account for minimap
+     * WILL HAVE TO REWRITE THIS
      */
     public void InitializeGame() {
         this.world = new BufferedImage(GameConstants.GAME_SCREEN_WIDTH,
@@ -80,12 +81,16 @@ public class GameWorld extends JPanel implements Runnable {
         );
     }
 
+    // change as we like, allows us to draw without casting to ints
+    // don't draw to g until entire frame is done
     @Override
     public void paintComponent(Graphics g) {
-        Graphics2D g2 = (Graphics2D) g;
+        Graphics2D g2 = (Graphics2D) g; // Graphics2D has more useful functions
         g2.setRenderingHints(GameConstants.RENDER_HINTS);
         Graphics2D buffer = world.createGraphics();
-        this.t1.drawImage(buffer);
+        buffer.setColor(Color.black);
+        buffer.fillRect(0, 0, GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT);
+        this.t1.drawImage(buffer); // add an extra t2 to get requirements 1 through 6 completed
         g2.drawImage(world, 0, 0, null);
     }
 }
