@@ -1,10 +1,10 @@
 # csc413-tankgame
 
 
-| Student Information |                |
-|:-------------------:|----------------|
-|  Student Name       |   Name Here    |
-|  Student Email      |   Email Here   |
+| Student Information |                 |
+|:-------------------:|-----------------|
+|  Student Name       | Roxana del Toro |
+|  Student Email      | rxdt@sfsu.edi   |
 
 
 ## Purpose of jar Folder 
@@ -16,9 +16,9 @@ The jar folder will store the built jar of your term project.
 
 # Required Information when Submitting Tank Game
 
-## Version of Java Used:
+## Version of Java Used: 24.0.1
 
-## IDE used: 
+## IDE used: IntelliJ IDEA 2025.1.2 (Ultimate Edition)
 
 ## Steps to Import project into IDE:
 
