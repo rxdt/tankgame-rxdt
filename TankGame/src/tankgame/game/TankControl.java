@@ -15,8 +15,8 @@ public class TankControl implements KeyListener {
         this.tank = tank;
         this.up = up;
         this.down = down;
-        this.right = right;
         this.left = left;
+        this.right = right;
     }
 
     @Override

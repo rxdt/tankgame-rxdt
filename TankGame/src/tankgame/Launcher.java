@@ -93,6 +93,7 @@ public class Launcher {
                 this.jf.setVisible(true);
             }
         }
+        this.jf.setLocationRelativeTo(null); // center on screen
     }
 
     public JFrame getJf() {

@@ -47,16 +47,16 @@ public class Tank{
     }
 
     void update() {
-       if (this.keysPressed.contains(Direction.UP)) {
+       if (this.keysPressed.contains(Direction.UP)) { // W
             this.moveForwards();
         }
-        if (this.keysPressed.contains(Direction.DOWN)) {
+        if (this.keysPressed.contains(Direction.DOWN)) { // S
             this.moveBackwards();
         }
-        if (this.keysPressed.contains(Direction.LEFT)) {
+        if (this.keysPressed.contains(Direction.LEFT)) { // A
             this.rotateLeft();
         }
-        if (this.keysPressed.contains(Direction.RIGHT)) {
+        if (this.keysPressed.contains(Direction.RIGHT)) { // D
             this.rotateRight();
         }
     }
@@ -87,17 +87,19 @@ public class Tank{
 
     // should be GAME_WORLD_HEIGHT, don't go off the world especially during split screen
     private void checkBorder() {
-        if (x < 30) {
-            x = 30;
+        int tankWidth = this.img.getWidth();
+        int tankHeight = this.img.getHeight();
+        if (x < 0) {
+            x = 0;
         }
-        if (x >= GameConstants.GAME_SCREEN_WIDTH - TANK_DIST_FROM_EDGE_X) {
-            x = GameConstants.GAME_SCREEN_WIDTH - TANK_DIST_FROM_EDGE_X;
+        if (x > GameConstants.GAME_SCREEN_WIDTH - tankWidth) {
+            x = GameConstants.GAME_SCREEN_WIDTH - tankWidth;
         }
-        if (y < 30) {
-            y = 30;
+        if (y < 0) {
+            y = 0;
         }
-        if (y >= GameConstants.GAME_SCREEN_HEIGHT - TANK_DIST_FROM_EDGE_Y) {
-            y = GameConstants.GAME_SCREEN_HEIGHT - TANK_DIST_FROM_EDGE_Y;
+        if (y > GameConstants.GAME_SCREEN_HEIGHT - tankHeight) {
+            y = GameConstants.GAME_SCREEN_HEIGHT - tankHeight;
         }
     }
 
