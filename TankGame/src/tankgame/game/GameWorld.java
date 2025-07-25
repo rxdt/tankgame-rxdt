@@ -76,9 +76,11 @@ public class GameWorld extends JPanel implements Runnable {
         }
 
         t1 = new Tank(300, 300, 0, 0, (short) 0, t1img);
-        this.lf.getJf().addKeyListener(
+        this.addKeyListener( //  listen to key events on the panel, not the jframe
             new TankControl(t1, KeyEvent.VK_W, KeyEvent.VK_S, KeyEvent.VK_A, KeyEvent.VK_D)
         );
+        this.setFocusable(true);        // allow GameWorld to be focused
+        this.requestFocusInWindow();    // ask Java to give it focus when this panel appears
     }
 
     // change as we like, allows us to draw without casting to ints

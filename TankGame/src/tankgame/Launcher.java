@@ -3,11 +3,10 @@ package tankgame;
 import tankgame.game.GameWorld;
 import tankgame.menus.EndGamePanel;
 import tankgame.menus.StartMenuPanel;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowEvent;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 public class Launcher {
 //    ConcurrentMap<Integer,GameWorld> map = new ConcurrentHashMap<Integer, GameWorld>();
@@ -50,7 +49,7 @@ public class Launcher {
          * start panel will be used to view the start menu. It will contain
          * two buttons start and exit.
          */
-        JPanel startPanel = new StartMenuPanel(this); // create a new start panel
+        JPanel startPanel = new StartMenuPanel(this); // create a new start panel, hands launcher to subpanel so it can call setFrame
         this.gamePanel = new GameWorld(this); // create a new game panel
         this.gamePanel.InitializeGame(); // initialize game, but DO NOT start game
         /*
@@ -74,22 +73,26 @@ public class Launcher {
      */
     public void setFrame(String type) {
         this.jf.setVisible(false); // hide the JFrame
-        // thse width/height resolutions will change to account for minimap
+        // these width/height resolutions will change to account for minimap
         switch (type) {
             case "start" -> {
                 this.jf.setSize(GameConstants.START_MENU_SCREEN_WIDTH, GameConstants.START_MENU_SCREEN_HEIGHT);
+                this.cl.show(mainPanel, type); // change current panel shown on main panel tp the panel denoted by type.
+                this.jf.setVisible(true); // show the JFrame
             }
             case "game" -> {
                 this.jf.setSize(GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT);
-                (new Thread(this.gamePanel)).start();
+                this.cl.show(mainPanel, type);         // show GameWorld panel
+                this.jf.setVisible(true);              // reveal the window again
+                this.gamePanel.requestFocusInWindow(); // give GameWorld panel keyboard focus
+                (new Thread(this.gamePanel)).start();  // start game loop
             }
             case "end" -> {
                 this.jf.setSize(GameConstants.END_MENU_SCREEN_WIDTH, GameConstants.END_MENU_SCREEN_HEIGHT);
-
+                this.cl.show(mainPanel, type);
+                this.jf.setVisible(true);
             }
         }
-        this.cl.show(mainPanel, type); // change current panel shown on main panel tp the panel denoted by type.
-        this.jf.setVisible(true); // show the JFrame
     }
 
     public JFrame getJf() {
