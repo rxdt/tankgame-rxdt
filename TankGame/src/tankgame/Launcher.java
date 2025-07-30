@@ -96,6 +96,10 @@ public class Launcher {
         this.jf.setLocationRelativeTo(null); // center on screen
     }
 
+    public GameWorld getGamePanel() {
+        return this.gamePanel;
+    }
+
     public JFrame getJf() {
         return jf;
     }

@@ -2,13 +2,12 @@ package tankgame.menus;
 
 
 import tankgame.Launcher;
+import tankgame.factories.ImageFactory;
 
-import javax.imageio.ImageIO;
 import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +15,7 @@ import java.util.Map;
 public class StartMenuPanel extends JPanel {
 
     private BufferedImage menuBackground;
-    private final Launcher lf;
+    private final Launcher launcher;
 
     // Flyweight pattern : move these resource factories to Resource Manager Singleton TODO
     private static final Map<String, BufferedImage> images = new HashMap<>();
@@ -32,14 +31,11 @@ public class StartMenuPanel extends JPanel {
 
 
 
-    public StartMenuPanel(Launcher lf) {
-        this.lf = lf;
-        try {
-
-            menuBackground = ImageIO.read(this.getClass().getClassLoader().getResource("title.png"));
-        } catch (IOException e) {
-            System.out.println("Error cant read menu background");
-            e.printStackTrace();
+    public StartMenuPanel(Launcher launcher) {
+        this.launcher = launcher;
+        menuBackground = ImageFactory.getImage("title.png");
+        if (menuBackground == null) {
+            System.err.println("Error: cannot load menu background image (title.png)");
             System.exit(-3);
         }
         this.setBackground(Color.BLACK);
@@ -48,13 +44,13 @@ public class StartMenuPanel extends JPanel {
         JButton start = new JButton("Start");
         start.setFont(new Font("Courier New", Font.BOLD, 24));
         start.setBounds(150, 300, 150, 50);
-        start.addActionListener(actionEvent -> this.lf.setFrame("game"));
+        start.addActionListener(actionEvent -> this.launcher.setFrame("game"));
 
         JButton exit = new JButton("Exit");
         exit.setSize(new Dimension(200, 100));
         exit.setFont(new Font("Courier New", Font.BOLD, 24));
         exit.setBounds(150, 400, 150, 50);
-        exit.addActionListener((actionEvent -> this.lf.closeGame()));
+        exit.addActionListener((actionEvent -> this.launcher.closeGame()));
 
         this.add(start);
         this.add(exit);

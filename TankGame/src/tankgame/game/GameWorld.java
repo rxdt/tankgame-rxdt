@@ -3,14 +3,12 @@ package tankgame.game;
 
 import tankgame.GameConstants;
 import tankgame.Launcher;
+import tankgame.factories.ImageFactory;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.Objects;
 
 
 public class GameWorld extends JPanel implements Runnable {
@@ -47,7 +45,7 @@ public class GameWorld extends JPanel implements Runnable {
      * Reset game to its initial state.
      */
     public void resetGame() {
-
+        InitializeGame(); // Resets the tank and reinitializes the world
     }
 
     /**
@@ -61,18 +59,14 @@ public class GameWorld extends JPanel implements Runnable {
                 BufferedImage.TYPE_INT_RGB);
 
         BufferedImage t1img = null;
-        try {
-            /*
-             * note class loaders read files from the out folder (build folder in Netbeans) and not the
-             * current working directory. When running a jar, class loaders will read from within the jar.
-             */
-            t1img = ImageIO.read(
-                    Objects.requireNonNull(GameWorld.class.getClassLoader().getResource("tank1.png"),
-                    "Could not find tank1.png")
-            );
-        } catch (IOException ex) {
-            System.out.println(ex.getMessage());
-            ex.printStackTrace();
+        /*
+         * note class loaders read files from the out folder (build folder in Netbeans) and not the
+         * current working directory. When running a jar, class loaders will read from within the jar.
+         */
+        t1img = ImageFactory.getImage("tank1.png");
+        if (t1img == null) {
+            System.err.println("Error: could not load tank1.png");
+            System.exit(-3);
         }
 
         t1 = new Tank(300, 300, 0, 0, (short) 0, t1img);
@@ -87,6 +81,7 @@ public class GameWorld extends JPanel implements Runnable {
     // don't draw to g until entire frame is done
     @Override
     public void paintComponent(Graphics g) {
+        super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g; // Graphics2D has more useful functions
         g2.setRenderingHints(GameConstants.RENDER_HINTS);
         Graphics2D buffer = world.createGraphics();
@@ -94,5 +89,11 @@ public class GameWorld extends JPanel implements Runnable {
         buffer.fillRect(0, 0, GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT);
         this.t1.drawImage(buffer); // add an extra t2 to get requirements 1 through 6 completed
         g2.drawImage(world, 0, 0, null);
+    }
+
+    @Override
+    public void addNotify() {
+        super.addNotify();
+        this.requestFocusInWindow(); // ensure events are captured when panel appears
     }
 }
