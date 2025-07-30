@@ -17,6 +17,7 @@ public class GameWorld extends JPanel implements Runnable {
     private Tank zombie1;
     private Tank zombie2;
     private final Launcher launcher;
+    private BufferedImage background;
 
     /**
      *
@@ -63,10 +64,11 @@ public class GameWorld extends JPanel implements Runnable {
          * note class loaders read files from the out folder (build folder in Netbeans) and not the
          * current working directory. When running a jar, class loaders will read from within the jar.
          */
+        background = ImageFactory.getImage("map1.png", GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT);
         BufferedImage z1img = ImageFactory.getImage("zombie1.png", 64, 64);
         BufferedImage z2img = ImageFactory.getImage("zombie2.png", 64, 64);
-        if (z1img == null || z2img == null) {
-            System.err.println("Error: could not load zombie png");
+        if (z1img == null || z2img == null || background == null) {
+            System.err.println("Error: could not load png");
             System.exit(-3);
         }
         zombie1 = new Tank(300, 300, 0, 0, (short) 0, z1img);
@@ -89,8 +91,7 @@ public class GameWorld extends JPanel implements Runnable {
         Graphics2D g2 = (Graphics2D) g; // Graphics2D has more useful functions
         g2.setRenderingHints(GameConstants.RENDER_HINTS);
         Graphics2D buffer = world.createGraphics();
-        buffer.setColor(Color.black);
-        buffer.fillRect(0, 0, GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT);
+        buffer.drawImage(background, 0, 0, null);
         this.zombie1.drawImage(buffer);
         this.zombie2.drawImage(buffer);
         g2.drawImage(world, 0, 0, null);
