@@ -81,6 +81,7 @@ public class GameWorld extends JPanel implements Runnable {
         }
         zombie1 = new Tank(300, 350, 0, 0, (short) 0, z1img);
         zombie2 = new Tank(600, 350, 0, 0, (short) 0, z2img);
+        zombie2.setFacingOffset(180);
         zombie1.setBulletImage(bulletImg);
         zombie2.setBulletImage(bulletImg);
         this.addKeyListener( //  listen to key events on the panel, not the jframe
