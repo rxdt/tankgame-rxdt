@@ -33,8 +33,10 @@ public class GameWorld extends JPanel implements Runnable {
     public void run() {
         try {
             while (true) {
-                this.zombie1.update(walls); // update tank
+                this.zombie1.update(walls); // update zombie
                 this.zombie2.update(walls);
+                zombie1.getBullets().forEach(Bullet::update);
+                zombie2.getBullets().forEach(Bullet::update);
                 this.repaint();   // redraw game
                 /*
                  * Sleep for 1000/144 ms (~6.9ms). This is done to have our 
@@ -69,21 +71,23 @@ public class GameWorld extends JPanel implements Runnable {
          */
         background = ImageFactory.getImage("map1.png", GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT);
         walls = new ArrayList<>();
-        BufferedImage bushWall = ImageFactory.getImage("bush.png", 32, 32);
         this.placeWalls();
         BufferedImage z1img = ImageFactory.getImage("zombie1.png", 64, 64);
         BufferedImage z2img = ImageFactory.getImage("zombie2.png", 64, 64);
-        if (z1img == null || z2img == null || background == null) {
+        BufferedImage bulletImg = ImageFactory.getImage("bullet.png", 32, 32);
+        if (z1img == null || z2img == null || background == null || bulletImg == null) {
             System.err.println("Error: could not load png");
             System.exit(-3);
         }
         zombie1 = new Tank(300, 350, 0, 0, (short) 0, z1img);
         zombie2 = new Tank(600, 350, 0, 0, (short) 0, z2img);
+        zombie1.setBulletImage(bulletImg);
+        zombie2.setBulletImage(bulletImg);
         this.addKeyListener( //  listen to key events on the panel, not the jframe
-            new TankControl(zombie1, KeyEvent.VK_W, KeyEvent.VK_S, KeyEvent.VK_A, KeyEvent.VK_D)
+            new TankControl(zombie1, KeyEvent.VK_W, KeyEvent.VK_S, KeyEvent.VK_A, KeyEvent.VK_D, KeyEvent.VK_SPACE)
         );
         this.addKeyListener(
-            new TankControl(zombie2, KeyEvent.VK_DOWN, KeyEvent.VK_UP, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT)
+            new TankControl(zombie2, KeyEvent.VK_DOWN, KeyEvent.VK_UP, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_ENTER)
         );
         this.setFocusable(true);        // allow GameWorld to be focused
         this.requestFocusInWindow();    // ask Java to give it focus when this panel appears
@@ -105,6 +109,8 @@ public class GameWorld extends JPanel implements Runnable {
         }
         zombie1.drawImage(buffer);
         zombie2.drawImage(buffer);
+        for (Bullet b : zombie1.getBullets()) b.draw(buffer);
+        for (Bullet b : zombie2.getBullets()) b.draw(buffer);
         // Set viewport dimensions for each player
         int viewWidth = GameConstants.GAME_SCREEN_WIDTH / 2;
         int viewHeight = GameConstants.GAME_SCREEN_HEIGHT;

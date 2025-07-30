@@ -10,13 +10,15 @@ public class TankControl implements KeyListener {
     private int down;
     private int right;
     private int left;
+    private final int fireKey;
 
-    public TankControl(Tank tank, int up, int down, int left, int right) {
+    public TankControl(Tank tank, int up, int down, int left, int right, int fireKey) {
         this.tank = tank;
         this.up = up;
         this.down = down;
         this.left = left;
         this.right = right;
+        this.fireKey = fireKey;
     }
 
     @Override
@@ -35,6 +37,8 @@ public class TankControl implements KeyListener {
             this.tank.pressed(Tank.Direction.LEFT);
         if (keyPressed == right)
             this.tank.pressed(Tank.Direction.RIGHT);
+        else if (keyPressed == fireKey)
+            this.tank.fire();
     }
 
     @Override

@@ -5,6 +5,7 @@ import tankgame.GameConstants;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -25,6 +26,8 @@ public class Tank {
     private float ROTATIONSPEED = 3.0f;
 
     private BufferedImage img; // don't want it static atm because need two tanks that look different
+    private BufferedImage bulletImg;
+    private List<Bullet> bullets = new ArrayList<>();
 
     Tank(float x, float y, float vx, float vy, float angle, BufferedImage img) {
         this.x = x;
@@ -128,5 +131,19 @@ public class Tank {
 
     public int getY() {
         return (int) this.y;
+    }
+
+    public void setBulletImage(BufferedImage bulletImg) {
+        this.bulletImg = bulletImg;
+    }
+
+    public List<Bullet> getBullets() {
+        return bullets;
+    }
+
+    public void fire() {
+        float bulletX = x + img.getWidth() / 2f - bulletImg.getWidth() / 2f;
+        float bulletY = y + img.getHeight() / 2f - bulletImg.getHeight() / 2f;
+        bullets.add(new Bullet(bulletX, bulletY, angle, bulletImg));
     }
 }
