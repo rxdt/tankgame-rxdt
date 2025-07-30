@@ -14,21 +14,23 @@ import java.awt.image.BufferedImage;
 public class GameWorld extends JPanel implements Runnable {
 
     private BufferedImage world;
-    private Tank z1;
-    private final Launcher lf;
+    private Tank zombie1;
+    private Tank zombie2;
+    private final Launcher launcher;
 
     /**
      *
      */
-    public GameWorld(Launcher lf) {
-        this.lf = lf;
+    public GameWorld(Launcher launcher) {
+        this.launcher = launcher;
     }
 
     @Override
     public void run() {
         try {
             while (true) {
-                this.z1.update(); // update tank
+                this.zombie1.update(); // update tank
+                this.zombie2.update();
                 this.repaint();   // redraw game
                 /*
                  * Sleep for 1000/144 ms (~6.9ms). This is done to have our 
@@ -62,14 +64,18 @@ public class GameWorld extends JPanel implements Runnable {
          * current working directory. When running a jar, class loaders will read from within the jar.
          */
         BufferedImage z1img = ImageFactory.getImage("zombie1.png", 64, 64);
-        if (z1img == null) {
-            System.err.println("Error: could not load zombie1.png");
+        BufferedImage z2img = ImageFactory.getImage("zombie2.png", 64, 64);
+        if (z1img == null || z2img == null) {
+            System.err.println("Error: could not load zombie png");
             System.exit(-3);
         }
-        z1 = new Tank(300, 300, 0, 0, (short) 0, z1img);
-
+        zombie1 = new Tank(300, 300, 0, 0, (short) 0, z1img);
+        zombie2 = new Tank(600, 300, 0, 0, (short) 0, z2img);
         this.addKeyListener( //  listen to key events on the panel, not the jframe
-            new TankControl(z1, KeyEvent.VK_W, KeyEvent.VK_S, KeyEvent.VK_A, KeyEvent.VK_D)
+            new TankControl(zombie1, KeyEvent.VK_W, KeyEvent.VK_S, KeyEvent.VK_A, KeyEvent.VK_D)
+        );
+        this.addKeyListener(
+            new TankControl(zombie2, KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT)
         );
         this.setFocusable(true);        // allow GameWorld to be focused
         this.requestFocusInWindow();    // ask Java to give it focus when this panel appears
@@ -85,7 +91,8 @@ public class GameWorld extends JPanel implements Runnable {
         Graphics2D buffer = world.createGraphics();
         buffer.setColor(Color.black);
         buffer.fillRect(0, 0, GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT);
-        this.z1.drawImage(buffer); // add an extra t2 to get requirements 1 through 6 completed
+        this.zombie1.drawImage(buffer);
+        this.zombie2.drawImage(buffer);
         g2.drawImage(world, 0, 0, null);
     }
 
