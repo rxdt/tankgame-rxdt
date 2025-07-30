@@ -48,6 +48,19 @@ public class GameWorld extends JPanel implements Runnable {
         }
     }
 
+    private void checkHits(Tank shooter, Tank target) {
+        List<Bullet> bullets = shooter.getBullets();
+        List<Bullet> toRemove = new ArrayList<>();
+        Rectangle targetBounds = new Rectangle(target.getX(), target.getY(), target.getImage().getWidth(), target.getImage().getHeight());
+        for (Bullet bullet : bullets) {
+            if (bullet.getBounds().intersects(targetBounds)) {
+                toRemove.add(bullet);
+                target.onHit(); // trigger red flash
+            }
+        }
+        bullets.removeAll(toRemove);
+    }
+
     /**
      * Reset game to its initial state.
      */
@@ -158,11 +171,11 @@ public class GameWorld extends JPanel implements Runnable {
         // Diagonal stack
         addWallAt(4, 7, weeds, TILE_SIZE, TILE_SIZE);
         addWallAt(3, 8, blueFlowers, TILE_SIZE, TILE_SIZE);
-        addWallAt(4, 1, log, TILE_SIZE*2,TILE_SIZE*2);
+        addWallAt(7, 7, log, TILE_SIZE*2,TILE_SIZE*2);
         // Vertical column
-        addWallAt(8, 3, log, TILE_SIZE*2, TILE_SIZE*2);
-        addWallAt(8, 5, blueFlowers, TILE_SIZE, TILE_SIZE);
-        addWallAt(8, 6, weeds, TILE_SIZE, TILE_SIZE);
+        addWallAt(8, 0, log, TILE_SIZE*2, TILE_SIZE*2);
+        addWallAt(8, 4, blueFlowers, TILE_SIZE, TILE_SIZE);
+        addWallAt(9, 4, weeds, TILE_SIZE, TILE_SIZE);
         // Top-right stack
         addWallAt(13, 2, bush, TILE_SIZE, TILE_SIZE);
         addWallAt(13, 3, sunflower, TILE_SIZE, TILE_SIZE);
@@ -202,6 +215,7 @@ public class GameWorld extends JPanel implements Runnable {
                 if (bulletBounds.intersects(targetBounds)) {
                     bullet.setActive(false);
                     toRemove.add(bullet);
+                    zombieTarget.onHit();
                     System.out.println("Bullet hit " + (zombieTarget == zombie1 ? "zombie1" : "zombie2"));
                     // TODO: trigger animation or health system
                 }

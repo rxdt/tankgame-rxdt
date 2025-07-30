@@ -30,6 +30,10 @@ public class Tank {
     private List<Bullet> bullets = new ArrayList<>();
     private float facingOffset = 0f;
 
+    private boolean isHit = false;
+    private long hitTime = 0;
+    private static final int HIT_FLASH_DURATION_MS = 200;
+
     Tank(float x, float y, float vx, float vy, float angle, BufferedImage img) {
         this.x = x;
         this.y = y;
@@ -131,7 +135,21 @@ public class Tank {
         AffineTransform at = new AffineTransform();
         at.translate(this.x, this.y);
         at.rotate(Math.toRadians(this.angle), this.img.getWidth() / 2.0, this.img.getHeight() / 2.0);
-        g.drawImage(this.img, at, null);
+        if (isHit && (System.currentTimeMillis() - hitTime < HIT_FLASH_DURATION_MS)) {
+            // Glow red if hit
+            System.out.println("Render red-tinted zombie");
+            BufferedImage tinted = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2d = tinted.createGraphics();
+            g2d.drawImage(img, 0, 0, null);
+            g2d.setComposite(AlphaComposite.SrcAtop);
+            g2d.setColor(new Color(255, 0, 0, 128));
+            g2d.fillRect(0, 0, img.getWidth(), img.getHeight());
+            g2d.dispose();
+            g.drawImage(tinted, at, null);
+        } else {
+            g.drawImage(this.img, at, null);
+            isHit = false; // reset if time passed
+        }
     }
 
     public int getX() {
@@ -166,5 +184,12 @@ public class Tank {
 
     public BufferedImage getImage() {
         return this.img;
+    }
+
+    // trigger red flash
+    public void onHit() {
+        System.out.println("Zombie was hit!");
+        isHit = true;
+        hitTime = System.currentTimeMillis();
     }
 }
