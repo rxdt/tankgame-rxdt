@@ -69,12 +69,12 @@ public class GameWorld extends JPanel implements Runnable {
          * note class loaders read files from the out folder (build folder in Netbeans) and not the
          * current working directory. When running a jar, class loaders will read from within the jar.
          */
-        background = ImageFactory.getImage("map1.png", GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT);
+        background = ResourceManager.getInstance().getImage("map1.png", GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT);
         walls = new ArrayList<>();
         this.placeWalls();
-        BufferedImage z1img = ImageFactory.getImage("zombie1.png", 64, 64);
-        BufferedImage z2img = ImageFactory.getImage("zombie2.png", 64, 64);
-        BufferedImage bulletImg = ImageFactory.getImage("bullet.png", 32, 32);
+        BufferedImage z1img = ResourceManager.getInstance().getImage("zombie1.png", 64, 64);
+        BufferedImage z2img = ResourceManager.getInstance().getImage("zombie2.png", 64, 64);
+        BufferedImage bulletImg = ResourceManager.getInstance().getImage("bullet.png", 32, 32);
         if (z1img == null || z2img == null || background == null || bulletImg == null) {
             System.err.println("Error: could not load png");
             System.exit(-3);
@@ -140,13 +140,13 @@ public class GameWorld extends JPanel implements Runnable {
 
     private void placeWalls() {
         walls = new ArrayList<>();
-        BufferedImage sunflower = ImageFactory.getImage("sunflower.png", TILE_SIZE, TILE_SIZE);
-        BufferedImage bush = ImageFactory.getImage("bush.png", TILE_SIZE, TILE_SIZE);
-        BufferedImage weeds = ImageFactory.getImage("weeds.png", TILE_SIZE, TILE_SIZE);
-        BufferedImage blueFlowers = ImageFactory.getImage("blue_flowers.png", TILE_SIZE, TILE_SIZE);
-        BufferedImage roses = ImageFactory.getImage("roses.png", TILE_SIZE, TILE_SIZE);
-        BufferedImage log = ImageFactory.getImage("log.png", TILE_SIZE*2, TILE_SIZE*2);
-        BufferedImage tree = ImageFactory.getImage("trees.png", TILE_SIZE, TILE_SIZE);
+        BufferedImage sunflower = ResourceManager.getInstance().getImage("sunflower.png", TILE_SIZE, TILE_SIZE);
+        BufferedImage bush = ResourceManager.getInstance().getImage("bush.png", TILE_SIZE, TILE_SIZE);
+        BufferedImage weeds = ResourceManager.getInstance().getImage("weeds.png", TILE_SIZE, TILE_SIZE);
+        BufferedImage blueFlowers = ResourceManager.getInstance().getImage("blue_flowers.png", TILE_SIZE, TILE_SIZE);
+        BufferedImage roses = ResourceManager.getInstance().getImage("roses.png", TILE_SIZE, TILE_SIZE);
+        BufferedImage log = ResourceManager.getInstance().getImage("log.png", TILE_SIZE*2, TILE_SIZE*2);
+        BufferedImage tree = ResourceManager.getInstance().getImage("trees.png", TILE_SIZE, TILE_SIZE);
 
         // Grid placement: addWallAt(col, row, image)
         addWallAt(1, 2, weeds, TILE_SIZE, TILE_SIZE);

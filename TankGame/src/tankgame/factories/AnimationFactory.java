@@ -1,5 +1,7 @@
 package tankgame.factories;
 
+import tankgame.game.ResourceManager;
+
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +15,7 @@ public class AnimationFactory {
         }
 
         List<BufferedImage> frames = framePaths.stream()
-                .map(path -> ImageFactory.getImage(path, 64, 64))
+                .map(path -> ResourceManager.getInstance().getImage(path, 64, 64))
                 .toList();
 
         animationCache.put(key, frames);

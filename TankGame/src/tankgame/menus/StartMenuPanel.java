@@ -3,7 +3,7 @@ package tankgame.menus;
 
 import tankgame.GameConstants;
 import tankgame.Launcher;
-import tankgame.factories.ImageFactory;
+import tankgame.game.ResourceManager;
 
 import javax.sound.sampled.Clip;
 import javax.swing.*;
@@ -34,7 +34,7 @@ public class StartMenuPanel extends JPanel {
 
     public StartMenuPanel(Launcher launcher) {
         this.launcher = launcher;
-        menuBackground = ImageFactory.getImage("title.png", GameConstants.START_MENU_SCREEN_WIDTH, GameConstants.START_MENU_SCREEN_HEIGHT);
+        menuBackground = ResourceManager.getInstance().getImage("title.png", GameConstants.START_MENU_SCREEN_WIDTH, GameConstants.START_MENU_SCREEN_HEIGHT);
         if (menuBackground == null) {
             System.err.println("Error: cannot load menu background image (title.png)");
             System.exit(-3);
