@@ -6,7 +6,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.EnumSet;
 
-public class Tank{
+public class Tank {
     private static final float TANK_DIST_FROM_EDGE_X = 85;
     private static final float TANK_DIST_FROM_EDGE_Y = 75;
     
@@ -103,10 +103,10 @@ public class Tank{
         }
     }
 
-    void drawImage(Graphics g) {
-        AffineTransform rotation = AffineTransform.getTranslateInstance(x, y); // allows movement to x.y and draw without casting positions to ints
-        rotation.rotate(Math.toRadians(angle), this.img.getWidth() / 2.0, this.img.getHeight() / 2.0);
-        Graphics2D g2d = (Graphics2D) g;
-        g2d.drawImage(this.img, rotation, null);
+    public void drawImage(Graphics2D g) {
+        AffineTransform at = new AffineTransform();
+        at.translate(this.x, this.y);
+        at.rotate(Math.toRadians(this.angle), this.img.getWidth() / 2.0, this.img.getHeight() / 2.0);
+        g.drawImage(this.img, at, null);
     }
 }

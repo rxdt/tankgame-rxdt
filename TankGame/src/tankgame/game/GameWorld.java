@@ -14,7 +14,7 @@ import java.awt.image.BufferedImage;
 public class GameWorld extends JPanel implements Runnable {
 
     private BufferedImage world;
-    private Tank t1;
+    private Tank z1;
     private final Launcher lf;
 
     /**
@@ -28,7 +28,7 @@ public class GameWorld extends JPanel implements Runnable {
     public void run() {
         try {
             while (true) {
-                this.t1.update(); // update tank
+                this.z1.update(); // update tank
                 this.repaint();   // redraw game
                 /*
                  * Sleep for 1000/144 ms (~6.9ms). This is done to have our 
@@ -57,21 +57,19 @@ public class GameWorld extends JPanel implements Runnable {
         this.world = new BufferedImage(GameConstants.GAME_SCREEN_WIDTH,
                 GameConstants.GAME_SCREEN_HEIGHT,
                 BufferedImage.TYPE_INT_RGB);
-
-        BufferedImage t1img = null;
         /*
          * note class loaders read files from the out folder (build folder in Netbeans) and not the
          * current working directory. When running a jar, class loaders will read from within the jar.
          */
-        t1img = ImageFactory.getImage("tank1.png");
-        if (t1img == null) {
-            System.err.println("Error: could not load tank1.png");
+        BufferedImage z1img = ImageFactory.getImage("zombie1.png", 64, 64);
+        if (z1img == null) {
+            System.err.println("Error: could not load zombie1.png");
             System.exit(-3);
         }
+        z1 = new Tank(300, 300, 0, 0, (short) 0, z1img);
 
-        t1 = new Tank(300, 300, 0, 0, (short) 0, t1img);
         this.addKeyListener( //  listen to key events on the panel, not the jframe
-            new TankControl(t1, KeyEvent.VK_W, KeyEvent.VK_S, KeyEvent.VK_A, KeyEvent.VK_D)
+            new TankControl(z1, KeyEvent.VK_W, KeyEvent.VK_S, KeyEvent.VK_A, KeyEvent.VK_D)
         );
         this.setFocusable(true);        // allow GameWorld to be focused
         this.requestFocusInWindow();    // ask Java to give it focus when this panel appears
@@ -87,7 +85,7 @@ public class GameWorld extends JPanel implements Runnable {
         Graphics2D buffer = world.createGraphics();
         buffer.setColor(Color.black);
         buffer.fillRect(0, 0, GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT);
-        this.t1.drawImage(buffer); // add an extra t2 to get requirements 1 through 6 completed
+        this.z1.drawImage(buffer); // add an extra t2 to get requirements 1 through 6 completed
         g2.drawImage(world, 0, 0, null);
     }
 

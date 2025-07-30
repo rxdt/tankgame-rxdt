@@ -1,6 +1,7 @@
 package tankgame.menus;
 
 
+import tankgame.GameConstants;
 import tankgame.Launcher;
 import tankgame.factories.ImageFactory;
 
@@ -33,7 +34,7 @@ public class StartMenuPanel extends JPanel {
 
     public StartMenuPanel(Launcher launcher) {
         this.launcher = launcher;
-        menuBackground = ImageFactory.getImage("title.png");
+        menuBackground = ImageFactory.getImage("title.png", GameConstants.START_MENU_SCREEN_WIDTH, GameConstants.START_MENU_SCREEN_HEIGHT);
         if (menuBackground == null) {
             System.err.println("Error: cannot load menu background image (title.png)");
             System.exit(-3);
@@ -58,7 +59,8 @@ public class StartMenuPanel extends JPanel {
 
     @Override
     public void paintComponent(Graphics g) {
+        super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
-        g2.drawImage(this.menuBackground, 0, 0, null);
+        g2.drawImage(this.menuBackground, 0, 0, getWidth(), getHeight(), null);
     }
 }

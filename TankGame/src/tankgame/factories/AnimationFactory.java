@@ -13,7 +13,7 @@ public class AnimationFactory {
         }
 
         List<BufferedImage> frames = framePaths.stream()
-                .map(ImageFactory::getImage)
+                .map(path -> ImageFactory.getImage(path, 64, 64))
                 .toList();
 
         animationCache.put(key, frames);

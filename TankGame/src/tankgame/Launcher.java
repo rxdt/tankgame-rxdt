@@ -1,5 +1,6 @@
 package tankgame;
 
+import tankgame.factories.ResourceFactory;
 import tankgame.game.GameWorld;
 import tankgame.menus.EndGamePanel;
 import tankgame.menus.StartMenuPanel;
@@ -38,12 +39,13 @@ public class Launcher {
 
     public Launcher() {
         this.jf = new JFrame(); // creating a new JFrame object
-        this.jf.setTitle("Tank Wars Game"); // setting the title of the JFrame window.
+        this.jf.setTitle("Zombie Wars Game"); // setting the title of the JFrame window.
         // when the GUI is closed, this will also shut down the VM
         this.jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     private void initUIComponents() {
+        ResourceFactory.preloadResources();
         this.mainPanel = new JPanel(); // create a new main panel
         /*
          * start panel will be used to view the start menu. It will contain

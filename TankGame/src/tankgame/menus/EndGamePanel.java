@@ -1,5 +1,6 @@
 package tankgame.menus;
 
+import tankgame.GameConstants;
 import tankgame.Launcher;
 import tankgame.factories.ImageFactory;
 
@@ -14,7 +15,7 @@ public class EndGamePanel extends JPanel {
 
     public EndGamePanel(Launcher launcher) {
         this.launcher = launcher;
-        menuBackground = ImageFactory.getImage("title.png");
+        menuBackground = ImageFactory.getImage("title.png", GameConstants.END_MENU_SCREEN_WIDTH, GameConstants.END_MENU_SCREEN_HEIGHT);
         if (menuBackground == null) {
             System.err.println("Error: cannot load menu background image (title.png)");
             System.exit(-3);
