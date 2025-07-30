@@ -2,7 +2,6 @@ package tankgame.game;
 
 import tankgame.GameConstants;
 import tankgame.Launcher;
-import tankgame.factories.ImageFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,10 +32,10 @@ public class GameWorld extends JPanel implements Runnable {
     public void run() {
         try {
             while (true) {
-                this.zombie1.update(walls); // update zombie
-                this.zombie2.update(walls);
-                zombie1.getBullets().forEach(Bullet::update);
-                zombie2.getBullets().forEach(Bullet::update);
+                this.zombie1.update(walls, zombie2); // update zombies
+                this.zombie2.update(walls, zombie1);
+                updateBullets(zombie1, zombie2);
+                updateBullets(zombie2, zombie1);
                 this.repaint();   // redraw game
                 /*
                  * Sleep for 1000/144 ms (~6.9ms). This is done to have our 
@@ -178,5 +177,36 @@ public class GameWorld extends JPanel implements Runnable {
 
     private void addWallAt(int col, int row, BufferedImage img, int width, int height) {
         walls.add(new Wall(col * TILE_SIZE, row * TILE_SIZE, width, height, img));
+    }
+
+    // handles bullet movement, deteects wall collisipn, removes bullets that hit walls
+    private void updateBullets(Tank shooter, Tank zombieTarget) {
+        List<Bullet> toRemove = new ArrayList<>();
+        for (Bullet bullet : shooter.getBullets()) {
+            bullet.update();
+            Rectangle bulletBounds = bullet.getBounds();
+            // 1. Check wall collisions
+            for (Wall wall : walls) {
+                if (bulletBounds.intersects(wall.getBounds())) {
+                    bullet.setActive(false);
+                    toRemove.add(bullet);
+                    break;
+                }
+            }
+            // 2. Check if bullet hits the other tank
+            if (bullet.isActive()) {
+                Rectangle targetBounds = new Rectangle(
+                        zombieTarget.getX(), zombieTarget.getY(),
+                        zombieTarget.getImage().getWidth(), zombieTarget.getImage().getHeight()
+                );
+                if (bulletBounds.intersects(targetBounds)) {
+                    bullet.setActive(false);
+                    toRemove.add(bullet);
+                    System.out.println("Bullet hit " + (zombieTarget == zombie1 ? "zombie1" : "zombie2"));
+                    // TODO: trigger animation or health system
+                }
+            }
+        }
+        shooter.getBullets().removeAll(toRemove);
     }
 }

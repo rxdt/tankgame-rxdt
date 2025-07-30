@@ -12,7 +12,7 @@ import java.util.List;
 public class Tank {
     private static final float TANK_DIST_FROM_EDGE_X = 85;
     private static final float TANK_DIST_FROM_EDGE_Y = 75;
-    
+
     public enum Direction {UP, DOWN, LEFT, RIGHT, SHOOT}
     private final EnumSet<Direction> keysPressed = EnumSet.noneOf(Direction.class);
 
@@ -51,7 +51,7 @@ public class Tank {
         keysPressed.remove(dir);
     }
 
-    public void update(List<Wall> walls) {
+    public void update(List<Wall> walls, Tank otherZombie) {
         float originalX = x;
         float originalY = y;
         if (this.keysPressed.contains(Direction.UP)) {
@@ -73,6 +73,14 @@ public class Tank {
                 x = originalX;
                 y = originalY;
                 return;
+            }
+        }
+        // Check for tank-tank collision
+        if (otherZombie != null) {
+            Rectangle otherBounds = new Rectangle(otherZombie.getX(), otherZombie.getY(), otherZombie.img.getWidth(), otherZombie.img.getHeight());
+            if (nextBounds.intersects(otherBounds)) {
+                x = originalX;
+                y = originalY;
             }
         }
     }
@@ -154,5 +162,9 @@ public class Tank {
 
     public void setFacingOffset(float offset) {
         this.facingOffset = offset;
+    }
+
+    public BufferedImage getImage() {
+        return this.img;
     }
 }
