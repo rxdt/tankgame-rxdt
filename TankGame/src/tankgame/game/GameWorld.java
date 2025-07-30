@@ -77,7 +77,7 @@ public class GameWorld extends JPanel implements Runnable {
             new TankControl(zombie1, KeyEvent.VK_W, KeyEvent.VK_S, KeyEvent.VK_A, KeyEvent.VK_D)
         );
         this.addKeyListener(
-            new TankControl(zombie2, KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT)
+            new TankControl(zombie2, KeyEvent.VK_DOWN, KeyEvent.VK_UP, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT)
         );
         this.setFocusable(true);        // allow GameWorld to be focused
         this.requestFocusInWindow();    // ask Java to give it focus when this panel appears
@@ -88,13 +88,32 @@ public class GameWorld extends JPanel implements Runnable {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        Graphics2D g2 = (Graphics2D) g; // Graphics2D has more useful functions
+        Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHints(GameConstants.RENDER_HINTS);
+        // Draw full world to offscreen buffer
         Graphics2D buffer = world.createGraphics();
+        buffer.setRenderingHints(GameConstants.RENDER_HINTS);
         buffer.drawImage(background, 0, 0, null);
-        this.zombie1.drawImage(buffer);
-        this.zombie2.drawImage(buffer);
-        g2.drawImage(world, 0, 0, null);
+        zombie1.drawImage(buffer);
+        zombie2.drawImage(buffer);
+        // Set viewport dimensions for each player
+        int viewWidth = GameConstants.GAME_SCREEN_WIDTH / 2;
+        int viewHeight = GameConstants.GAME_SCREEN_HEIGHT;
+        // Get each zombie's view
+        BufferedImage leftView = getViewport(zombie1.getX(), zombie1.getY(), viewWidth, viewHeight);
+        BufferedImage rightView = getViewport(zombie2.getX(), zombie2.getY(), viewWidth, viewHeight);
+        // Draw both views side by side
+        g2.drawImage(leftView, 0, 0, null);
+        g2.drawImage(rightView, viewWidth, 0, null);
+    }
+
+    private BufferedImage getViewport(int centerX, int centerY, int width, int height) {
+        int x = centerX - width / 2;
+        int y = centerY - height / 2;
+        // Clamp to map boundaries
+        x = Math.max(0, Math.min(x, world.getWidth() - width));
+        y = Math.max(0, Math.min(y, world.getHeight() - height));
+        return world.getSubimage(x, y, width, height);
     }
 
     @Override

@@ -109,4 +109,12 @@ public class Tank {
         at.rotate(Math.toRadians(this.angle), this.img.getWidth() / 2.0, this.img.getHeight() / 2.0);
         g.drawImage(this.img, at, null);
     }
+
+    public int getX() {
+        return (int) this.x;
+    }
+
+    public int getY() {
+        return (int) this.y;
+    }
 }
