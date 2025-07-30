@@ -1,10 +1,12 @@
 package tankgame.game;
 
 import tankgame.GameConstants;
+
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.EnumSet;
+import java.util.List;
 
 public class Tank {
     private static final float TANK_DIST_FROM_EDGE_X = 85;
@@ -23,7 +25,6 @@ public class Tank {
     private float ROTATIONSPEED = 3.0f;
 
     private BufferedImage img; // don't want it static atm because need two tanks that look different
-
 
     Tank(float x, float y, float vx, float vy, float angle, BufferedImage img) {
         this.x = x;
@@ -46,18 +47,29 @@ public class Tank {
         keysPressed.remove(dir);
     }
 
-    void update() {
-       if (this.keysPressed.contains(Direction.UP)) { // W
+    public void update(List<Wall> walls) {
+        float originalX = x;
+        float originalY = y;
+        if (this.keysPressed.contains(Direction.UP)) {
             this.moveForwards();
         }
-        if (this.keysPressed.contains(Direction.DOWN)) { // S
+        if (this.keysPressed.contains(Direction.DOWN)) {
             this.moveBackwards();
         }
-        if (this.keysPressed.contains(Direction.LEFT)) { // A
+        if (this.keysPressed.contains(Direction.LEFT)) {
             this.rotateLeft();
         }
-        if (this.keysPressed.contains(Direction.RIGHT)) { // D
+        if (this.keysPressed.contains(Direction.RIGHT)) {
             this.rotateRight();
+        }
+        Rectangle nextBounds = new Rectangle((int)x, (int)y, this.img.getWidth(), this.img.getHeight());
+        for (Wall wall : walls) {
+            if (nextBounds.intersects(wall.getBounds())) {
+                // Undo movement
+                x = originalX;
+                y = originalY;
+                return;
+            }
         }
     }
 

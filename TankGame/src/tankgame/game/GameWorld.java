@@ -1,6 +1,5 @@
 package tankgame.game;
 
-
 import tankgame.GameConstants;
 import tankgame.Launcher;
 import tankgame.factories.ImageFactory;
@@ -9,6 +8,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class GameWorld extends JPanel implements Runnable {
@@ -18,6 +19,8 @@ public class GameWorld extends JPanel implements Runnable {
     private Tank zombie2;
     private final Launcher launcher;
     private BufferedImage background;
+    private List<Wall> walls;
+    final int TILE_SIZE = 64;
 
     /**
      *
@@ -30,8 +33,8 @@ public class GameWorld extends JPanel implements Runnable {
     public void run() {
         try {
             while (true) {
-                this.zombie1.update(); // update tank
-                this.zombie2.update();
+                this.zombie1.update(walls); // update tank
+                this.zombie2.update(walls);
                 this.repaint();   // redraw game
                 /*
                  * Sleep for 1000/144 ms (~6.9ms). This is done to have our 
@@ -65,14 +68,17 @@ public class GameWorld extends JPanel implements Runnable {
          * current working directory. When running a jar, class loaders will read from within the jar.
          */
         background = ImageFactory.getImage("map1.png", GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT);
+        walls = new ArrayList<>();
+        BufferedImage bushWall = ImageFactory.getImage("bush.png", 32, 32);
+        this.placeWalls();
         BufferedImage z1img = ImageFactory.getImage("zombie1.png", 64, 64);
         BufferedImage z2img = ImageFactory.getImage("zombie2.png", 64, 64);
         if (z1img == null || z2img == null || background == null) {
             System.err.println("Error: could not load png");
             System.exit(-3);
         }
-        zombie1 = new Tank(300, 300, 0, 0, (short) 0, z1img);
-        zombie2 = new Tank(600, 300, 0, 0, (short) 0, z2img);
+        zombie1 = new Tank(300, 350, 0, 0, (short) 0, z1img);
+        zombie2 = new Tank(600, 350, 0, 0, (short) 0, z2img);
         this.addKeyListener( //  listen to key events on the panel, not the jframe
             new TankControl(zombie1, KeyEvent.VK_W, KeyEvent.VK_S, KeyEvent.VK_A, KeyEvent.VK_D)
         );
@@ -94,6 +100,9 @@ public class GameWorld extends JPanel implements Runnable {
         Graphics2D buffer = world.createGraphics();
         buffer.setRenderingHints(GameConstants.RENDER_HINTS);
         buffer.drawImage(background, 0, 0, null);
+        for (Wall wall : walls) {
+            wall.draw(buffer);
+        }
         zombie1.drawImage(buffer);
         zombie2.drawImage(buffer);
         // Set viewport dimensions for each player
@@ -120,5 +129,47 @@ public class GameWorld extends JPanel implements Runnable {
     public void addNotify() {
         super.addNotify();
         this.requestFocusInWindow(); // ensure events are captured when panel appears
+    }
+
+    private void placeWalls() {
+        walls = new ArrayList<>();
+        BufferedImage sunflower = ImageFactory.getImage("sunflower.png", TILE_SIZE, TILE_SIZE);
+        BufferedImage bush = ImageFactory.getImage("bush.png", TILE_SIZE, TILE_SIZE);
+        BufferedImage weeds = ImageFactory.getImage("weeds.png", TILE_SIZE, TILE_SIZE);
+        BufferedImage blueFlowers = ImageFactory.getImage("blue_flowers.png", TILE_SIZE, TILE_SIZE);
+        BufferedImage roses = ImageFactory.getImage("roses.png", TILE_SIZE, TILE_SIZE);
+        BufferedImage log = ImageFactory.getImage("log.png", TILE_SIZE*2, TILE_SIZE*2);
+        BufferedImage tree = ImageFactory.getImage("trees.png", TILE_SIZE, TILE_SIZE);
+
+        // Grid placement: addWallAt(col, row, image)
+        addWallAt(1, 2, weeds, TILE_SIZE, TILE_SIZE);
+        addWallAt(2, 2, bush, TILE_SIZE, TILE_SIZE);
+        addWallAt(3, 2, bush, TILE_SIZE, TILE_SIZE);
+        addWallAt(3, 3, blueFlowers, TILE_SIZE, TILE_SIZE);
+        // Bottom-left
+        addWallAt(2, 6, blueFlowers, TILE_SIZE, TILE_SIZE);
+        addWallAt(1, 6, roses, TILE_SIZE, TILE_SIZE);
+        // Diagonal stack
+        addWallAt(4, 7, weeds, TILE_SIZE, TILE_SIZE);
+        addWallAt(3, 8, blueFlowers, TILE_SIZE, TILE_SIZE);
+        addWallAt(4, 1, log, TILE_SIZE*2,TILE_SIZE*2);
+        // Vertical column
+        addWallAt(8, 3, log, TILE_SIZE*2, TILE_SIZE*2);
+        addWallAt(8, 5, blueFlowers, TILE_SIZE, TILE_SIZE);
+        addWallAt(8, 6, weeds, TILE_SIZE, TILE_SIZE);
+        // Top-right stack
+        addWallAt(13, 2, bush, TILE_SIZE, TILE_SIZE);
+        addWallAt(13, 3, sunflower, TILE_SIZE, TILE_SIZE);
+        addWallAt(13, 4, tree, TILE_SIZE, TILE_SIZE);
+        addWallAt(10, 0, weeds, TILE_SIZE, TILE_SIZE);
+        // Bottom-right
+        addWallAt(11, 8, bush, TILE_SIZE, TILE_SIZE);
+        addWallAt(12, 8, weeds, TILE_SIZE, TILE_SIZE);
+        addWallAt(13, 8, roses, TILE_SIZE, TILE_SIZE);
+        addWallAt(14, 8, bush, TILE_SIZE, TILE_SIZE);
+    }
+
+    private void addWallAt(int col, int row, BufferedImage img, int width, int height) {
+        walls.add(new Wall(col * TILE_SIZE, row * TILE_SIZE, width, height, img));
     }
 }
