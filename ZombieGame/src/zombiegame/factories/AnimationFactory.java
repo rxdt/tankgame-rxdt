@@ -1,6 +1,6 @@
-package tankgame.factories;
+package zombiegame.factories;
 
-import tankgame.game.ResourceManager;
+import zombiegame.game.ResourceManager;
 
 import java.awt.image.BufferedImage;
 import java.util.HashMap;

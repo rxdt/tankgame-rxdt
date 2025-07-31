@@ -1,4 +1,4 @@
-package tankgame.game;
+package zombiegame.game;
 
 import java.awt.image.BufferedImage;
 
@@ -8,7 +8,7 @@ public class SpeedBoost extends PowerUp {
     }
 
     @Override
-    public void applyTo(Tank zombie) {
+    public void applyTo(Zombie zombie) {
         zombie.setSpeedBoost(2); // double speeed
         zombie.setBoostTimer(System.currentTimeMillis());
     }

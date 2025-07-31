@@ -1,7 +1,7 @@
-package tankgame.factories;
+package zombiegame.factories;
 
-import tankgame.GameConstants;
-import tankgame.game.ResourceManager;
+import zombiegame.GameConstants;
+import zombiegame.game.ResourceManager;
 
 public class ResourceFactory {
 

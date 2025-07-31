@@ -1,4 +1,4 @@
-package tankgame.factories;
+package zombiegame.factories;
 
 import javax.imageio.ImageIO;
 import java.awt.*;

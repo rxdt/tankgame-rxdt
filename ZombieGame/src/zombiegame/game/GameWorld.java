@@ -1,7 +1,7 @@
-package tankgame.game;
+package zombiegame.game;
 
-import tankgame.GameConstants;
-import tankgame.Launcher;
+import zombiegame.GameConstants;
+import zombiegame.Launcher;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,8 +14,8 @@ import java.util.List;
 public class GameWorld extends JPanel implements Runnable {
 
     private BufferedImage world;
-    private Tank zombie1;
-    private Tank zombie2;
+    private Zombie zombie1;
+    private Zombie zombie2;
     private final Launcher launcher;
     private BufferedImage background;
     private List<Wall> walls;
@@ -80,7 +80,7 @@ public class GameWorld extends JPanel implements Runnable {
         this.lastPowerUpSpawnTime = System.currentTimeMillis();
     }
 
-    private void checkPowerUpPickup(Tank zombie) {
+    private void checkPowerUpPickup(Zombie zombie) {
         List<PowerUp> toRemove = new ArrayList<>();
         for (PowerUp powerUp : powerUps) {
             if (powerUp.getBounds().intersects(new Rectangle(zombie.getX(), zombie.getY(), zombie.getImage().getWidth(), zombie.getImage().getHeight()))) {
@@ -95,11 +95,11 @@ public class GameWorld extends JPanel implements Runnable {
      * Reset game to its initial state.
      */
     public void resetGame() {
-        InitializeGame(); // Resets the tank and reinitializes the world
+        InitializeGame(); // Resets the zombie and reinitializes the world
     }
 
     /**
-     * Load all resources for Tank Wars Game. Set all Game Objects to their
+     * Load all resources for Zombie Wars Game. Set all Game Objects to their
      * initial state as well. // thse width/height resolutions will change to account for minimap
      * WILL HAVE TO REWRITE THIS
      */
@@ -124,16 +124,16 @@ public class GameWorld extends JPanel implements Runnable {
             System.err.println("Error: could not load png");
             System.exit(-3);
         }
-        zombie1 = new Tank(300, 350, 0, 0, (short) 0, z1img);
-        zombie2 = new Tank(600, 350, 0, 0, (short) 0, z2img);
+        zombie1 = new Zombie(300, 350, 0, 0, (short) 0, z1img);
+        zombie2 = new Zombie(600, 350, 0, 0, (short) 0, z2img);
         zombie2.setFacingOffset(180);
         zombie1.setBulletImage(bulletImg);
         zombie2.setBulletImage(bulletImg);
         this.addKeyListener( //  listen to key events on the panel, not the jframe
-            new TankControl(zombie1, KeyEvent.VK_W, KeyEvent.VK_S, KeyEvent.VK_A, KeyEvent.VK_D, KeyEvent.VK_SPACE)
+            new ZombieControl(zombie1, KeyEvent.VK_W, KeyEvent.VK_S, KeyEvent.VK_A, KeyEvent.VK_D, KeyEvent.VK_SPACE)
         );
         this.addKeyListener(
-            new TankControl(zombie2, KeyEvent.VK_DOWN, KeyEvent.VK_UP, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_ENTER)
+            new ZombieControl(zombie2, KeyEvent.VK_DOWN, KeyEvent.VK_UP, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_ENTER)
         );
         this.setFocusable(true);        // allow GameWorld to be focused
         this.requestFocusInWindow();    // ask Java to give it focus when this panel appears
@@ -230,7 +230,7 @@ public class GameWorld extends JPanel implements Runnable {
     }
 
     // handles bullet movement, deteects wall collisipn, removes bullets that hit walls
-    private void updateBullets(Tank shooter, Tank zombieTarget) {
+    private void updateBullets(Zombie shooter, Zombie zombieTarget) {
         List<Bullet> toRemove = new ArrayList<>();
         for (Bullet bullet : shooter.getBullets()) {
             bullet.update();
@@ -243,7 +243,7 @@ public class GameWorld extends JPanel implements Runnable {
                     break;
                 }
             }
-            // 2. Check if bullet hits the other tank
+            // 2. Check if bullet hits the other zombie
             if (bullet.isActive()) {
                 Rectangle targetBounds = new Rectangle(
                         zombieTarget.getX(), zombieTarget.getY(),

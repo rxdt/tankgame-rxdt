@@ -1,4 +1,4 @@
-# csc413-tankgame
+# csc413-zombiegame
 
 
 | Student Information |                 |

@@ -1,19 +1,19 @@
-package tankgame.game;
+package zombiegame.game;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 
-public class TankControl implements KeyListener {
-    private final Tank tank;
+public class ZombieControl implements KeyListener {
+    private final Zombie zombie;
     private int up;
     private int down;
     private int right;
     private int left;
     private final int fireKey;
 
-    public TankControl(Tank tank, int up, int down, int left, int right, int fireKey) {
-        this.tank = tank;
+    public ZombieControl(Zombie zombie, int up, int down, int left, int right, int fireKey) {
+        this.zombie = zombie;
         this.up = up;
         this.down = down;
         this.left = left;
@@ -30,27 +30,27 @@ public class TankControl implements KeyListener {
     public void keyPressed(KeyEvent ke) {
         int keyPressed = ke.getKeyCode();
         if (keyPressed == up)
-            this.tank.pressed(Tank.Direction.UP);
+            this.zombie.pressed(Zombie.Direction.UP);
         if (keyPressed == down)
-            this.tank.pressed(Tank.Direction.DOWN);
+            this.zombie.pressed(Zombie.Direction.DOWN);
         if (keyPressed == left)
-            this.tank.pressed(Tank.Direction.LEFT);
+            this.zombie.pressed(Zombie.Direction.LEFT);
         if (keyPressed == right)
-            this.tank.pressed(Tank.Direction.RIGHT);
+            this.zombie.pressed(Zombie.Direction.RIGHT);
         else if (keyPressed == fireKey)
-            this.tank.fire();
+            this.zombie.fire();
     }
 
     @Override
     public void keyReleased(KeyEvent ke) {
         int keyReleased = ke.getKeyCode();
         if (keyReleased == up)
-            this.tank.released(Tank.Direction.UP);
+            this.zombie.released(Zombie.Direction.UP);
         if (keyReleased == down)
-            this.tank.released(Tank.Direction.DOWN);
+            this.zombie.released(Zombie.Direction.DOWN);
         if (keyReleased == left)
-            this.tank.released(Tank.Direction.LEFT);
+            this.zombie.released(Zombie.Direction.LEFT);
         if (keyReleased == right)
-            this.tank.released(Tank.Direction.RIGHT);
+            this.zombie.released(Zombie.Direction.RIGHT);
     }
 }

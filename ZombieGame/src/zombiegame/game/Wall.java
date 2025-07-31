@@ -1,4 +1,4 @@
-package tankgame.game;
+package zombiegame.game;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

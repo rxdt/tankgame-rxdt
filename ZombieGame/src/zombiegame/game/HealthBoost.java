@@ -1,4 +1,4 @@
-package tankgame.game;
+package zombiegame.game;
 
 import java.awt.image.BufferedImage;
 
@@ -10,7 +10,7 @@ public class HealthBoost extends PowerUp {
     }
 
     @Override
-    public void applyTo(Tank tank) {
-        tank.heal(healAmount);
+    public void applyTo(Zombie zombie) {
+        zombie.heal(healAmount);
     }
 }

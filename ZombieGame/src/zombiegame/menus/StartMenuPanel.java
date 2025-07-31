@@ -1,9 +1,9 @@
-package tankgame.menus;
+package zombiegame.menus;
 
 
-import tankgame.GameConstants;
-import tankgame.Launcher;
-import tankgame.game.ResourceManager;
+import zombiegame.GameConstants;
+import zombiegame.Launcher;
+import zombiegame.game.ResourceManager;
 
 import javax.swing.*;
 import java.awt.*;

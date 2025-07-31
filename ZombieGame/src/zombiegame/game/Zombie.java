@@ -1,6 +1,6 @@
-package tankgame.game;
+package zombiegame.game;
 
-import tankgame.GameConstants;
+import zombiegame.GameConstants;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -9,10 +9,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
-public class Tank {
-    private static final float TANK_DIST_FROM_EDGE_X = 85;
-    private static final float TANK_DIST_FROM_EDGE_Y = 75;
-
+public class Zombie {
     public enum Direction {UP, DOWN, LEFT, RIGHT, SHOOT}
     private final EnumSet<Direction> keysPressed = EnumSet.noneOf(Direction.class);
 
@@ -21,11 +18,11 @@ public class Tank {
     private float vx; // useful for simple approach to collisions, velocity x distance traveled over time
     private float vy; // useful for simple approach to collisions, velocity y
 
-    private float angle; // direction tank is facing - make sure all assets facing same way
+    private float angle; // direction zombie is facing - make sure all assets facing same way
     private float R = 5; // speed
     private float ROTATIONSPEED = 3.0f;
 
-    private BufferedImage img; // don't want it static atm because need two tanks that look different
+    private BufferedImage img; // don't want it static atm because need two zombies that look different
     private BufferedImage bulletImg;
     private List<Bullet> bullets = new ArrayList<>();
     private float facingOffset = 0f;
@@ -40,7 +37,7 @@ public class Tank {
     private double speedMultiplier = 1.0;
     private long boostTimer = 0;
 
-    Tank(float x, float y, float vx, float vy, float angle, BufferedImage img) {
+    Zombie(float x, float y, float vx, float vy, float angle, BufferedImage img) {
         this.x = x;
         this.y = y;
         this.vx = vx;
@@ -61,7 +58,7 @@ public class Tank {
         keysPressed.remove(dir);
     }
 
-    public void update(List<Wall> walls, Tank otherZombie) {
+    public void update(List<Wall> walls, Zombie otherZombie) {
         resetPowerUps();
         float originalX = x;
         float originalY = y;
@@ -86,7 +83,7 @@ public class Tank {
                 return;
             }
         }
-        // Check for tank-tank collision
+        // Check for zombie-zombie collision
         if (otherZombie != null) {
             Rectangle otherBounds = new Rectangle(otherZombie.getX(), otherZombie.getY(), otherZombie.img.getWidth(), otherZombie.img.getHeight());
             if (nextBounds.intersects(otherBounds)) {
@@ -122,19 +119,19 @@ public class Tank {
 
     // should be GAME_WORLD_HEIGHT, don't go off the world especially during split screen
     private void checkBorder() {
-        int tankWidth = this.img.getWidth();
-        int tankHeight = this.img.getHeight();
+        int zombieWidth = this.img.getWidth();
+        int zombieHeight = this.img.getHeight();
         if (x < 0) {
             x = 0;
         }
-        if (x > GameConstants.GAME_SCREEN_WIDTH - tankWidth) {
-            x = GameConstants.GAME_SCREEN_WIDTH - tankWidth;
+        if (x > GameConstants.GAME_SCREEN_WIDTH - zombieWidth) {
+            x = GameConstants.GAME_SCREEN_WIDTH - zombieWidth;
         }
         if (y < 0) {
             y = 0;
         }
-        if (y > GameConstants.GAME_SCREEN_HEIGHT - tankHeight) {
-            y = GameConstants.GAME_SCREEN_HEIGHT - tankHeight;
+        if (y > GameConstants.GAME_SCREEN_HEIGHT - zombieHeight) {
+            y = GameConstants.GAME_SCREEN_HEIGHT - zombieHeight;
         }
     }
 

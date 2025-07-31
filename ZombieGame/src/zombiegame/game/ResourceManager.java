@@ -1,6 +1,6 @@
-package tankgame.game;
+package zombiegame.game;
 
-import tankgame.factories.ImageFactory;
+import zombiegame.factories.ImageFactory;
 
 import javax.sound.sampled.Clip;
 import java.awt.image.BufferedImage;

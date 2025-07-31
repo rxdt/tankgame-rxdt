@@ -1,4 +1,4 @@
-package tankgame;
+package zombiegame;
 
 import java.awt.RenderingHints;
 import java.util.HashMap;

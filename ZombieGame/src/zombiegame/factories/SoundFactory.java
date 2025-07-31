@@ -1,4 +1,4 @@
-package tankgame.factories;
+package zombiegame.factories;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;

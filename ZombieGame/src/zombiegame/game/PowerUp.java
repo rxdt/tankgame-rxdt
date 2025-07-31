@@ -1,4 +1,4 @@
-package tankgame.game;
+package zombiegame.game;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -24,7 +24,7 @@ public abstract class PowerUp {
         g.drawImage(img, x, y, null);
     }
 
-    public abstract void applyTo(Tank tank);
+    public abstract void applyTo(Zombie zombie);
 
     public void setSpawnTime(long time) {
         this.spawnTime = time;

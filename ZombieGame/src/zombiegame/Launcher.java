@@ -1,9 +1,9 @@
-package tankgame;
+package zombiegame;
 
-import tankgame.factories.ResourceFactory;
-import tankgame.game.GameWorld;
-import tankgame.menus.EndGamePanel;
-import tankgame.menus.StartMenuPanel;
+import zombiegame.factories.ResourceFactory;
+import zombiegame.game.GameWorld;
+import zombiegame.menus.EndGamePanel;
+import zombiegame.menus.StartMenuPanel;
 
 import javax.swing.*;
 import java.awt.*;
