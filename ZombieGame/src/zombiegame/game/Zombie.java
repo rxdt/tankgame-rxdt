@@ -31,7 +31,9 @@ public class Zombie {
     private long hitTime = 0;
     private static final int HIT_FLASH_DURATION_MS = 200;
 
-    private int health = 100;
+    private int health = GameConstants.MAX_HEALTH; // 100
+    private int lives = 3;
+
     private static final long BOOST_DURATION = 5000; // 5 seconds
     private boolean shielded = false;
     private double speedMultiplier = 1.0;
@@ -164,6 +166,10 @@ public class Zombie {
         g.fillRect(barX, barY, barWidth, barHeight);
         g.setColor(Color.GREEN);
         g.fillRect(barX, barY, (int)(barWidth * (health / 100.0)), barHeight);
+        // Lives above zombie
+        g.setColor(Color.WHITE);
+        g.setFont(new Font("Arial", Font.PLAIN, 14));
+        g.drawString("Lives: " + lives, x, y - 25);
 
         // Show shield while active
         if (this.shielded && System.currentTimeMillis() - boostTimer <= GameConstants.FIVE_SECONDS) {
@@ -239,5 +245,14 @@ public class Zombie {
 
     public int getHealth() {
         return health;
+    }
+
+    public int getLives() {
+        return lives;
+    }
+
+    public void deductALife() {
+        lives--;
+        this.health = GameConstants.MAX_HEALTH; // reset health
     }
 }

@@ -282,6 +282,13 @@ public class GameWorld extends JPanel implements Runnable {
                     bullet.setActive(false);
                     toRemove.add(bullet);
                     zombieTarget.onHit();
+                    if (zombieTarget.getHealth() <= 0) {
+                        if (zombieTarget.getLives() > 1) {
+                            zombieTarget.deductALife();
+                        } else {
+                            gameOver = true;
+                        }
+                    }
                     System.out.println("Bullet hit " + (zombieTarget == zombie1 ? "zombie1" : "zombie2"));
                 }
             }

@@ -22,4 +22,5 @@ public class GameConstants {
     }};
 
     public static final int FIVE_SECONDS = 5000;
+    public static final int MAX_HEALTH = 100;
 }
