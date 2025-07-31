@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 // don't go bigger than 1080p
 public class GameConstants {
+    public static final int GENERIC_SIZE = 64;
+    public static final int POWERUP_SIZE = 48;
     public static final int GAME_SCREEN_WIDTH = 960;
     public static final int GAME_SCREEN_HEIGHT = 600;
 

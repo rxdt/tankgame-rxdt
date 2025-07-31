@@ -20,10 +20,11 @@ public class GameWorld extends JPanel implements Runnable {
     private BufferedImage background;
     private List<Wall> walls;
     final int TILE_SIZE = 64;
+    private List<PowerUp> powerUps = new ArrayList<>();
+    private long lastPowerUpSpawnTime = 0;
+    private final long powerUpSpawnCooldown = 7000; // 7 seconds
+    private BufferedImage healthImg, speedImg, shieldImg;
 
-    /**
-     *
-     */
     public GameWorld(Launcher launcher) {
         this.launcher = launcher;
     }
@@ -36,6 +37,10 @@ public class GameWorld extends JPanel implements Runnable {
                 this.zombie2.update(walls, zombie1);
                 updateBullets(zombie1, zombie2);
                 updateBullets(zombie2, zombie1);
+                createRandomPowerUp(); // randomly create and place powerups of different types
+                checkPowerUpPickup(zombie1);
+                checkPowerUpPickup(zombie2);
+                removeExpiredPowerUps();
                 this.repaint();   // redraw game
                 /*
                  * Sleep for 1000/144 ms (~6.9ms). This is done to have our 
@@ -48,17 +53,42 @@ public class GameWorld extends JPanel implements Runnable {
         }
     }
 
-    private void checkHits(Tank shooter, Tank target) {
-        List<Bullet> bullets = shooter.getBullets();
-        List<Bullet> toRemove = new ArrayList<>();
-        Rectangle targetBounds = new Rectangle(target.getX(), target.getY(), target.getImage().getWidth(), target.getImage().getHeight());
-        for (Bullet bullet : bullets) {
-            if (bullet.getBounds().intersects(targetBounds)) {
-                toRemove.add(bullet);
-                target.onHit(); // trigger red flash
+    private void removeExpiredPowerUps() {
+        long now = System.currentTimeMillis();
+        powerUps.removeIf(powerUp -> now - powerUp.getSpawnTime() > 7000); // Remove after 7 sec
+    }
+
+    private void createRandomPowerUp() {
+        if (System.currentTimeMillis() - lastPowerUpSpawnTime < powerUpSpawnCooldown) return; // hasn't been long enough
+        int x = (int)(Math.random() * (GameConstants.GAME_SCREEN_WIDTH - 32));
+        int y = (int)(Math.random() * (GameConstants.GAME_SCREEN_HEIGHT - 32));
+        // Prevent spawning inside walls
+        Rectangle spawnArea = new Rectangle(x, y, GameConstants.POWERUP_SIZE, GameConstants.POWERUP_SIZE);
+        for (Wall wall : walls) {
+            if (spawnArea.intersects(wall.getBounds())) return;
+        }
+        PowerUp powerUp;
+        int type = (int)(Math.random() * 3); // get a random number between 0–2
+        switch (type) {
+            case 0 -> powerUp = new HealthBoost(x, y, healthImg);
+            case 1 -> powerUp = new SpeedBoost(x, y, speedImg);
+            case 2 -> powerUp = new ShieldBoost(x, y, shieldImg);
+            default -> throw new IllegalStateException("Unexpected value: " + type);
+        }
+        powerUp.setSpawnTime(System.currentTimeMillis());
+        this.powerUps.add(powerUp);
+        this.lastPowerUpSpawnTime = System.currentTimeMillis();
+    }
+
+    private void checkPowerUpPickup(Tank zombie) {
+        List<PowerUp> toRemove = new ArrayList<>();
+        for (PowerUp p : powerUps) {
+            if (p.getBounds().intersects(new Rectangle(zombie.getX(), zombie.getY(), zombie.getImage().getWidth(), zombie.getImage().getHeight()))) {
+                p.applyTo(zombie);
+                toRemove.add(p);
             }
         }
-        bullets.removeAll(toRemove);
+        powerUps.removeAll(toRemove);
     }
 
     /**
@@ -84,10 +114,13 @@ public class GameWorld extends JPanel implements Runnable {
         background = ResourceManager.getInstance().getImage("map1.png", GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT);
         walls = new ArrayList<>();
         this.placeWalls();
-        BufferedImage z1img = ResourceManager.getInstance().getImage("zombie1.png", 64, 64);
-        BufferedImage z2img = ResourceManager.getInstance().getImage("zombie2.png", 64, 64);
-        BufferedImage bulletImg = ResourceManager.getInstance().getImage("bullet.png", 32, 32);
-        if (z1img == null || z2img == null || background == null || bulletImg == null) {
+        BufferedImage z1img = ResourceManager.getInstance().getImage("zombie1.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
+        BufferedImage z2img = ResourceManager.getInstance().getImage("zombie2.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
+        BufferedImage bulletImg = ResourceManager.getInstance().getImage("bullet.png", GameConstants.GENERIC_SIZE/2, GameConstants.GENERIC_SIZE/2);
+        this.healthImg = ResourceManager.getInstance().getImage("brain_powerup.png", GameConstants.POWERUP_SIZE, GameConstants.POWERUP_SIZE);
+        this.speedImg = ResourceManager.getInstance().getImage("potion_powerup.png", GameConstants.POWERUP_SIZE, GameConstants.POWERUP_SIZE);
+        this.shieldImg = ResourceManager.getInstance().getImage("injection_powerup.png", GameConstants.POWERUP_SIZE, GameConstants.POWERUP_SIZE);
+        if (z1img == null || z2img == null || background == null || bulletImg == null || healthImg == null || speedImg == null || shieldImg == null) {
             System.err.println("Error: could not load png");
             System.exit(-3);
         }
@@ -124,6 +157,10 @@ public class GameWorld extends JPanel implements Runnable {
         zombie2.drawImage(buffer);
         for (Bullet b : zombie1.getBullets()) b.draw(buffer);
         for (Bullet b : zombie2.getBullets()) b.draw(buffer);
+
+        for (PowerUp p : powerUps) {
+            p.draw(buffer);
+        }
         // Set viewport dimensions for each player
         int viewWidth = GameConstants.GAME_SCREEN_WIDTH / 2;
         int viewHeight = GameConstants.GAME_SCREEN_HEIGHT;
@@ -161,34 +198,34 @@ public class GameWorld extends JPanel implements Runnable {
         BufferedImage tree = ResourceManager.getInstance().getImage("trees.png", TILE_SIZE, TILE_SIZE);
 
         // Grid placement: addWallAt(col, row, image)
-        addWallAt(1, 2, weeds, TILE_SIZE, TILE_SIZE);
-        addWallAt(2, 2, bush, TILE_SIZE, TILE_SIZE);
-        addWallAt(3, 2, bush, TILE_SIZE, TILE_SIZE);
-        addWallAt(3, 3, blueFlowers, TILE_SIZE, TILE_SIZE);
+        addItemAtSpot(1, 2, weeds, TILE_SIZE, TILE_SIZE);
+        addItemAtSpot(2, 2, bush, TILE_SIZE, TILE_SIZE);
+        addItemAtSpot(3, 2, bush, TILE_SIZE, TILE_SIZE);
+        addItemAtSpot(3, 3, blueFlowers, TILE_SIZE, TILE_SIZE);
         // Bottom-left
-        addWallAt(2, 6, blueFlowers, TILE_SIZE, TILE_SIZE);
-        addWallAt(1, 6, roses, TILE_SIZE, TILE_SIZE);
+        addItemAtSpot(2, 6, blueFlowers, TILE_SIZE, TILE_SIZE);
+        addItemAtSpot(1, 6, roses, TILE_SIZE, TILE_SIZE);
         // Diagonal stack
-        addWallAt(4, 7, weeds, TILE_SIZE, TILE_SIZE);
-        addWallAt(3, 8, blueFlowers, TILE_SIZE, TILE_SIZE);
-        addWallAt(7, 7, log, TILE_SIZE*2,TILE_SIZE*2);
+        addItemAtSpot(4, 7, weeds, TILE_SIZE, TILE_SIZE);
+        addItemAtSpot(3, 8, blueFlowers, TILE_SIZE, TILE_SIZE);
+        addItemAtSpot(7, 7, log, TILE_SIZE*2,TILE_SIZE*2);
         // Vertical column
-        addWallAt(8, 0, log, TILE_SIZE*2, TILE_SIZE*2);
-        addWallAt(8, 4, blueFlowers, TILE_SIZE, TILE_SIZE);
-        addWallAt(9, 4, weeds, TILE_SIZE, TILE_SIZE);
+        addItemAtSpot(8, 0, log, TILE_SIZE*2, TILE_SIZE*2);
+        addItemAtSpot(8, 4, blueFlowers, TILE_SIZE, TILE_SIZE);
+        addItemAtSpot(9, 4, weeds, TILE_SIZE, TILE_SIZE);
         // Top-right stack
-        addWallAt(13, 2, bush, TILE_SIZE, TILE_SIZE);
-        addWallAt(13, 3, sunflower, TILE_SIZE, TILE_SIZE);
-        addWallAt(13, 4, tree, TILE_SIZE, TILE_SIZE);
-        addWallAt(10, 0, weeds, TILE_SIZE, TILE_SIZE);
+        addItemAtSpot(13, 2, bush, TILE_SIZE, TILE_SIZE);
+        addItemAtSpot(13, 3, sunflower, TILE_SIZE, TILE_SIZE);
+        addItemAtSpot(13, 4, tree, TILE_SIZE, TILE_SIZE);
+        addItemAtSpot(10, 0, weeds, TILE_SIZE, TILE_SIZE);
         // Bottom-right
-        addWallAt(11, 8, bush, TILE_SIZE, TILE_SIZE);
-        addWallAt(12, 8, weeds, TILE_SIZE, TILE_SIZE);
-        addWallAt(13, 8, roses, TILE_SIZE, TILE_SIZE);
-        addWallAt(14, 8, bush, TILE_SIZE, TILE_SIZE);
+        addItemAtSpot(11, 8, bush, TILE_SIZE, TILE_SIZE);
+        addItemAtSpot(12, 8, weeds, TILE_SIZE, TILE_SIZE);
+        addItemAtSpot(13, 8, roses, TILE_SIZE, TILE_SIZE);
+        addItemAtSpot(14, 8, bush, TILE_SIZE, TILE_SIZE);
     }
 
-    private void addWallAt(int col, int row, BufferedImage img, int width, int height) {
+    private void addItemAtSpot(int col, int row, BufferedImage img, int width, int height) {
         walls.add(new Wall(col * TILE_SIZE, row * TILE_SIZE, width, height, img));
     }
 

@@ -34,6 +34,12 @@ public class Tank {
     private long hitTime = 0;
     private static final int HIT_FLASH_DURATION_MS = 200;
 
+    private int health = 100;
+    private static final long BOOST_DURATION = 5000; // 5 seconds
+    private boolean shielded = false;
+    private double speedMultiplier = 1.0;
+    private long boostTimer = 0;
+
     Tank(float x, float y, float vx, float vy, float angle, BufferedImage img) {
         this.x = x;
         this.y = y;
@@ -56,6 +62,7 @@ public class Tank {
     }
 
     public void update(List<Wall> walls, Tank otherZombie) {
+        resetPowerUps();
         float originalX = x;
         float originalY = y;
         if (this.keysPressed.contains(Direction.UP)) {
@@ -191,5 +198,27 @@ public class Tank {
         System.out.println("Zombie was hit!");
         isHit = true;
         hitTime = System.currentTimeMillis();
+    }
+
+    public void heal(int healAmount) {
+        this.health = Math.min(100, health + healAmount);
+    }
+
+    public void setSpeedBoost(double multiplier) {
+        this.speedMultiplier = multiplier;
+    }
+
+    public void setBoostTimer(long l) {
+    }
+
+    public void setShield(boolean isShielded) {
+        this.shielded = isShielded;
+    }
+
+    private void resetPowerUps() {
+        if (System.currentTimeMillis() - boostTimer > BOOST_DURATION) {
+            speedMultiplier = 1.0;
+            shielded = false;
+        }
     }
 }
