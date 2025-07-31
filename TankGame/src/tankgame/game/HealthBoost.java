@@ -3,7 +3,7 @@ package tankgame.game;
 import java.awt.image.BufferedImage;
 
 public class HealthBoost extends PowerUp {
-    private int healAmount = 30;
+    private int healAmount = 15;
 
     public HealthBoost(int x, int y, BufferedImage img) {
         super(x, y, img);

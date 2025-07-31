@@ -20,4 +20,6 @@ public class GameConstants {
         put(RenderingHints.KEY_INTERPOLATION,RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     }};
+
+    public static final int FIVE_SECONDS = 5000;
 }

@@ -10,6 +10,5 @@ public class ShieldBoost extends PowerUp {
     @Override
     public void applyTo(Tank zombie) {
         zombie.setShield(true);
-        zombie.setBoostTimer(System.currentTimeMillis());
     }
 }

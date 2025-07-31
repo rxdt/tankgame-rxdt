@@ -82,10 +82,10 @@ public class GameWorld extends JPanel implements Runnable {
 
     private void checkPowerUpPickup(Tank zombie) {
         List<PowerUp> toRemove = new ArrayList<>();
-        for (PowerUp p : powerUps) {
-            if (p.getBounds().intersects(new Rectangle(zombie.getX(), zombie.getY(), zombie.getImage().getWidth(), zombie.getImage().getHeight()))) {
-                p.applyTo(zombie);
-                toRemove.add(p);
+        for (PowerUp powerUp : powerUps) {
+            if (powerUp.getBounds().intersects(new Rectangle(zombie.getX(), zombie.getY(), zombie.getImage().getWidth(), zombie.getImage().getHeight()))) {
+                powerUp.applyTo(zombie);
+                toRemove.add(powerUp);
             }
         }
         powerUps.removeAll(toRemove);

@@ -26,8 +26,8 @@ public abstract class PowerUp {
 
     public abstract void applyTo(Tank tank);
 
-    public void setSpawnTime(long t) {
-        this.spawnTime = t;
+    public void setSpawnTime(long time) {
+        this.spawnTime = time;
     }
 
     public long getSpawnTime() {

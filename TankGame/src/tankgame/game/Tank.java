@@ -195,9 +195,10 @@ public class Tank {
 
     // trigger red flash
     public void onHit() {
-        System.out.println("Zombie was hit!");
-        isHit = true;
-        hitTime = System.currentTimeMillis();
+        if (this.shielded && System.currentTimeMillis() < GameConstants.FIVE_SECONDS) {
+            return; // no damage
+        }
+        this.health -= 10;
     }
 
     public void heal(int healAmount) {
@@ -208,7 +209,8 @@ public class Tank {
         this.speedMultiplier = multiplier;
     }
 
-    public void setBoostTimer(long l) {
+    public void setBoostTimer(long boostTimer) {
+        this.boostTimer = boostTimer;
     }
 
     public void setShield(boolean isShielded) {
