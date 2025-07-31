@@ -2,6 +2,7 @@ package zombiegame.game;
 
 import zombiegame.GameConstants;
 import zombiegame.Launcher;
+import zombiegame.factories.SoundFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -189,7 +190,7 @@ public class GameWorld extends JPanel implements Runnable {
         g2.drawImage(leftView, 0, 0, null);
         g2.drawImage(rightView, viewWidth, 0, null);
 
-        if (gameOver) {
+        if (gameOver && winnerText != null) {
             g2.setColor(new Color(0, 0, 0, 150));
             g2.fillRect(0, 0, GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT);
 
@@ -266,15 +267,16 @@ public class GameWorld extends JPanel implements Runnable {
 
     // handles bullet movement, deteects wall collisipn, removes bullets that hit walls
     private void updateBullets(Zombie shooter, Zombie zombieTarget) {
-        List<Bullet> toRemove = new ArrayList<>();
-        for (Bullet bullet : shooter.getBullets()) {
+        List<Bullet> bulletsToRemove = new ArrayList<>();
+        List<Bullet> bulletsToRemoveCopy = new ArrayList<>(shooter.getBullets());
+        for (Bullet bullet : bulletsToRemoveCopy) {
             bullet.update();
             Rectangle bulletBounds = bullet.getBounds();
             // 1. Check wall collisions
             for (Wall wall : walls) {
                 if (bulletBounds.intersects(wall.getBounds())) {
                     bullet.setActive(false);
-                    toRemove.add(bullet);
+                    bulletsToRemove.add(bullet);
                     if (wall instanceof BreakableWall breakable) {
                          breakable.destroy();
                     }
@@ -289,19 +291,21 @@ public class GameWorld extends JPanel implements Runnable {
                 );
                 if (bulletBounds.intersects(targetBounds)) {
                     bullet.setActive(false);
-                    toRemove.add(bullet);
+                    bulletsToRemove.add(bullet);
                     zombieTarget.onHit();
                     if (zombieTarget.getHealth() <= 0) {
                         if (zombieTarget.getLives() > 1) {
                             zombieTarget.deductALife();
                         } else {
                             gameOver = true;
+                            SoundFactory.stopAllSounds();
+                            SoundFactory.playLoopedSound("sfx/Plants vs. Zombies - Moongrains.wav");
                         }
                     }
                     System.out.println("Bullet hit " + (zombieTarget == zombie1 ? "zombie1" : "zombie2"));
                 }
             }
         }
-        shooter.getBullets().removeAll(toRemove);
+        shooter.getBullets().removeAll(bulletsToRemove);
     }
 }

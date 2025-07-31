@@ -1,6 +1,7 @@
 package zombiegame.menus;
 
 import zombiegame.Launcher;
+import zombiegame.factories.SoundFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,7 +24,9 @@ public class EndGamePanel extends JPanel {
             this.launcher.getGamePanel().resetGame(); // reset game world
             Thread gameThread = new Thread(this.launcher.getGamePanel());
             gameThread.start();
+            SoundFactory.stopAllSounds();
             this.launcher.setFrame("game");           // then switch to game view
+            SoundFactory.playLoopedSound("sfx/Plants vs. Zombies - Ultimate Battle.wav");
         });
         JButton exit = new JButton("Exit");
         exit.setFont(new Font("Courier New", Font.BOLD, 24));

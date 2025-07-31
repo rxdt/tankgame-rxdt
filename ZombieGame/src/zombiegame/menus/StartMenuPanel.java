@@ -3,6 +3,7 @@ package zombiegame.menus;
 
 import zombiegame.GameConstants;
 import zombiegame.Launcher;
+import zombiegame.factories.SoundFactory;
 import zombiegame.game.ResourceManager;
 
 import javax.swing.*;
@@ -16,6 +17,7 @@ public class StartMenuPanel extends JPanel {
 
     public StartMenuPanel(Launcher launcher) {
         this.launcher = launcher;
+        SoundFactory.playLoopedSound("sfx/plants-vs-zombies-halloween-spooky.wav");
         menuBackground = ResourceManager.getInstance().getImage("title.png", GameConstants.START_MENU_SCREEN_WIDTH, GameConstants.START_MENU_SCREEN_HEIGHT);
         if (menuBackground == null) {
             System.err.println("Error: cannot load menu background image (title.png)");
@@ -27,7 +29,11 @@ public class StartMenuPanel extends JPanel {
         JButton start = new JButton("Start");
         start.setFont(new Font("Courier New", Font.BOLD, 24));
         start.setBounds(150, 300, 150, 50);
-        start.addActionListener(actionEvent -> this.launcher.setFrame("game"));
+        start.addActionListener(actionEvent -> {
+            SoundFactory.stopAllSounds();
+            this.launcher.setFrame("game");
+            SoundFactory.playLoopedSound("sfx/Plants vs. Zombies - Ultimate Battle.wav");
+        });
 
         JButton exit = new JButton("Exit");
         exit.setSize(new Dimension(200, 100));
