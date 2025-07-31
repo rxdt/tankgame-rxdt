@@ -113,8 +113,8 @@ public class Tank {
     }
 
     private void moveForwards() {
-        vx = Math.round(R * Math.cos(Math.toRadians(angle)));
-        vy = Math.round(R * Math.sin(Math.toRadians(angle)));
+        vx = Math.round((float)(R * speedMultiplier * Math.cos(Math.toRadians(angle))));
+        vy = Math.round((float)(R * speedMultiplier * Math.sin(Math.toRadians(angle))));
         x += vx;
         y += vy;
         checkBorder();
@@ -157,6 +157,22 @@ public class Tank {
             g.drawImage(this.img, at, null);
             isHit = false; // reset if time passed
         }
+
+        // Health bar above zombie head
+        int barWidth = 40;
+        int barHeight = 5;
+        int barX = (int)x + (img.getWidth() - barWidth) / 2;
+        int barY = (int)y - 10;
+        g.setColor(Color.RED);
+        g.fillRect(barX, barY, barWidth, barHeight);
+        g.setColor(Color.GREEN);
+        g.fillRect(barX, barY, (int)(barWidth * (health / 100.0)), barHeight);
+
+        // Show shield while active
+        if (this.shielded && System.currentTimeMillis() - boostTimer <= GameConstants.FIVE_SECONDS) {
+            g.setColor(new Color(0, 255, 255, 255));
+            g.drawOval((int)x - 8, (int)y - 8, img.getWidth() + 16, img.getHeight() + 16);
+        }
     }
 
     public int getX() {
@@ -195,10 +211,10 @@ public class Tank {
 
     // trigger red flash
     public void onHit() {
-        if (this.shielded && System.currentTimeMillis() < GameConstants.FIVE_SECONDS) {
-            return; // no damage
+        if (this.shielded && System.currentTimeMillis() - boostTimer <= GameConstants.FIVE_SECONDS) {
+            return; // shield still active
         }
-        this.health -= 10;
+        this.health -= 5; // else damage the zombie
     }
 
     public void heal(int healAmount) {
