@@ -223,42 +223,45 @@ public class GameWorld extends JPanel implements Runnable {
         walls = new ArrayList<>();
         BufferedImage sunflower = ResourceManager.getInstance().getImage("sunflower.png", TILE_SIZE, TILE_SIZE);
         BufferedImage bush = ResourceManager.getInstance().getImage("bush.png", TILE_SIZE, TILE_SIZE);
-        BufferedImage weeds = ResourceManager.getInstance().getImage("weeds.png", TILE_SIZE, TILE_SIZE);
+        BufferedImage daisies = ResourceManager.getInstance().getImage("daisies.png", TILE_SIZE, TILE_SIZE);
         BufferedImage blueFlowers = ResourceManager.getInstance().getImage("blue_flowers.png", TILE_SIZE, TILE_SIZE);
         BufferedImage roses = ResourceManager.getInstance().getImage("roses.png", TILE_SIZE, TILE_SIZE);
         BufferedImage log = ResourceManager.getInstance().getImage("log.png", TILE_SIZE*2, TILE_SIZE*2);
         BufferedImage tree = ResourceManager.getInstance().getImage("trees.png", TILE_SIZE, TILE_SIZE);
 
         // Grid placement: addWallAt(col, row, image)
-        addItemAtSpot(1, 2, weeds, TILE_SIZE, TILE_SIZE);
-        addItemAtSpot(2, 2, bush, TILE_SIZE, TILE_SIZE);
-        addItemAtSpot(3, 2, bush, TILE_SIZE, TILE_SIZE);
-        addItemAtSpot(3, 3, blueFlowers, TILE_SIZE, TILE_SIZE);
+        addItemAtSpot(1, 2, daisies, TILE_SIZE, TILE_SIZE, true);
+        addItemAtSpot(2, 2, sunflower, TILE_SIZE, TILE_SIZE, true);
+        addItemAtSpot(3, 2, bush, TILE_SIZE, TILE_SIZE, false);
+        addItemAtSpot(3, 3, blueFlowers, TILE_SIZE, TILE_SIZE, true);
         // Bottom-left
-        addItemAtSpot(2, 6, blueFlowers, TILE_SIZE, TILE_SIZE);
-        addItemAtSpot(1, 6, roses, TILE_SIZE, TILE_SIZE);
+        addItemAtSpot(2, 6, blueFlowers, TILE_SIZE, TILE_SIZE, true);
+        addItemAtSpot(1, 6, roses, TILE_SIZE, TILE_SIZE, true);
         // Diagonal stack
-        addItemAtSpot(4, 7, weeds, TILE_SIZE, TILE_SIZE);
-        addItemAtSpot(3, 8, blueFlowers, TILE_SIZE, TILE_SIZE);
-        addItemAtSpot(7, 7, log, TILE_SIZE*2,TILE_SIZE*2);
+        addItemAtSpot(4, 7, daisies, TILE_SIZE, TILE_SIZE, true);
+        addItemAtSpot(3, 8, blueFlowers, TILE_SIZE, TILE_SIZE, true);
+        addItemAtSpot(7, 7, log, TILE_SIZE*2,TILE_SIZE*2, false);
         // Vertical column
-        addItemAtSpot(8, 0, log, TILE_SIZE*2, TILE_SIZE*2);
-        addItemAtSpot(8, 4, blueFlowers, TILE_SIZE, TILE_SIZE);
-        addItemAtSpot(9, 4, weeds, TILE_SIZE, TILE_SIZE);
+        addItemAtSpot(8, 0, log, TILE_SIZE*2, TILE_SIZE*2, false);
+        addItemAtSpot(8, 4, blueFlowers, TILE_SIZE, TILE_SIZE, true);
+        addItemAtSpot(9, 4, daisies, TILE_SIZE, TILE_SIZE, true);
         // Top-right stack
-        addItemAtSpot(13, 2, bush, TILE_SIZE, TILE_SIZE);
-        addItemAtSpot(13, 3, sunflower, TILE_SIZE, TILE_SIZE);
-        addItemAtSpot(13, 4, tree, TILE_SIZE, TILE_SIZE);
-        addItemAtSpot(10, 0, weeds, TILE_SIZE, TILE_SIZE);
+        addItemAtSpot(13, 2, bush, TILE_SIZE, TILE_SIZE, false);
+        addItemAtSpot(13, 3, sunflower, TILE_SIZE, TILE_SIZE, true);
+        addItemAtSpot(13, 4, tree, TILE_SIZE, TILE_SIZE, false);
+        addItemAtSpot(10, 0, daisies, TILE_SIZE, TILE_SIZE, true);
         // Bottom-right
-        addItemAtSpot(11, 8, bush, TILE_SIZE, TILE_SIZE);
-        addItemAtSpot(12, 8, weeds, TILE_SIZE, TILE_SIZE);
-        addItemAtSpot(13, 8, roses, TILE_SIZE, TILE_SIZE);
-        addItemAtSpot(14, 8, bush, TILE_SIZE, TILE_SIZE);
+        addItemAtSpot(11, 8, bush, TILE_SIZE, TILE_SIZE, false);
+        addItemAtSpot(12, 8, daisies, TILE_SIZE, TILE_SIZE, true);
+        addItemAtSpot(13, 8, roses, TILE_SIZE, TILE_SIZE, true);
+        addItemAtSpot(14, 8, bush, TILE_SIZE, TILE_SIZE, false);
     }
 
-    private void addItemAtSpot(int col, int row, BufferedImage img, int width, int height) {
-        walls.add(new Wall(col * TILE_SIZE, row * TILE_SIZE, width, height, img));
+    private void addItemAtSpot(int col, int row, BufferedImage img, int width, int height, Boolean isBreakable) {
+        if (!isBreakable) {
+            walls.add(new Wall(col * TILE_SIZE, row * TILE_SIZE, width, height, img));
+        }
+        walls.add(new BreakableWall(col * TILE_SIZE, row * TILE_SIZE, width, height, img));
     }
 
     // handles bullet movement, deteects wall collisipn, removes bullets that hit walls
@@ -272,6 +275,9 @@ public class GameWorld extends JPanel implements Runnable {
                 if (bulletBounds.intersects(wall.getBounds())) {
                     bullet.setActive(false);
                     toRemove.add(bullet);
+                    if (wall instanceof BreakableWall breakable) {
+                         breakable.destroy();
+                    }
                     break;
                 }
             }
