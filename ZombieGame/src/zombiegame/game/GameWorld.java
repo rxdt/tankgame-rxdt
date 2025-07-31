@@ -24,6 +24,8 @@ public class GameWorld extends JPanel implements Runnable {
     private long lastPowerUpSpawnTime = 0;
     private final long powerUpSpawnCooldown = 7000; // 7 seconds
     private BufferedImage healthImg, speedImg, shieldImg;
+    private Boolean gameOver = false;
+    private String winnerText;
 
     public GameWorld(Launcher launcher) {
         this.launcher = launcher;
@@ -33,24 +35,34 @@ public class GameWorld extends JPanel implements Runnable {
     public void run() {
         try {
             while (true) {
-                this.zombie1.update(walls, zombie2); // update zombies
-                this.zombie2.update(walls, zombie1);
-                updateBullets(zombie1, zombie2);
-                updateBullets(zombie2, zombie1);
-                createRandomPowerUp(); // randomly create and place powerups of different types
-                checkPowerUpPickup(zombie1);
-                checkPowerUpPickup(zombie2);
-                removeExpiredPowerUps();
+                if (!gameOver) {
+                    this.zombie1.update(walls, zombie2); // update zombies
+                    this.zombie2.update(walls, zombie1);
+                    updateBullets(zombie1, zombie2);
+                    updateBullets(zombie2, zombie1);
+                    createRandomPowerUp(); // randomly create and place powerups of different types
+                    checkPowerUpPickup(zombie1);
+                    checkPowerUpPickup(zombie2);
+                    removeExpiredPowerUps();
+                    checkGameOver();
+                }
                 this.repaint();   // redraw game
                 /*
-                 * Sleep for 1000/144 ms (~6.9ms). This is done to have our 
-                 * loop run at a fixed rate per/sec. 
-                */
+                 * Sleep for 1000/144 ms (~6.9ms). This is done to have our
+                 * loop run at a fixed rate per/sec.
+                 */
                 Thread.sleep(1000 / 144);
             }
         } catch (InterruptedException ignored) {
             System.out.println(ignored);
         }
+    }
+
+    private void checkGameOver() {
+        int zombie1Health = zombie1.getHealth();
+        int zombie2Health = zombie2.getHealth();
+        if (zombie1Health <= 0 || zombie2Health <= 0) {gameOver = true;}
+        this.winnerText = zombie1Health > zombie2Health ? "Green zombie has won!" : "Red zombie has won!";
     }
 
     private void removeExpiredPowerUps() {
@@ -92,8 +104,8 @@ public class GameWorld extends JPanel implements Runnable {
     }
 
     /**
-     * Reset game to its initial state.
-     */
+    * Reset game to its initial state.
+    */
     public void resetGame() {
         InitializeGame(); // Resets the zombie and reinitializes the world
     }
@@ -170,6 +182,17 @@ public class GameWorld extends JPanel implements Runnable {
         // Draw both views side by side
         g2.drawImage(leftView, 0, 0, null);
         g2.drawImage(rightView, viewWidth, 0, null);
+
+        if (gameOver) {
+            g2.setColor(new Color(0, 0, 0, 150));
+            g2.fillRect(0, 0, GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT);
+
+            g2.setColor(Color.CYAN);
+            g2.setFont(new Font("Papyrus", Font.BOLD, 70));
+            FontMetrics fm = g2.getFontMetrics();
+            int textWidth = fm.stringWidth(winnerText);
+            g2.drawString(winnerText, (GameConstants.GAME_SCREEN_WIDTH - textWidth) / 2, GameConstants.GAME_SCREEN_HEIGHT / 2);
+        }
     }
 
     private BufferedImage getViewport(int centerX, int centerY, int width, int height) {

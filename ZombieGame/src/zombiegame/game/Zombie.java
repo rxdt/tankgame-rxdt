@@ -236,4 +236,8 @@ public class Zombie {
             shielded = false;
         }
     }
+
+    public int getHealth() {
+        return health;
+    }
 }
