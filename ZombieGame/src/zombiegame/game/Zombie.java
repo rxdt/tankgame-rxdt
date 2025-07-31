@@ -212,8 +212,9 @@ public class Zombie {
         return this.img;
     }
 
-    // trigger red flash
+    // trigger red flash and play hit sound
     public void onHit() {
+        ResourceManager.getInstance().playSound("zombie_hit.wav");
         if (this.shielded && System.currentTimeMillis() - boostTimer <= GameConstants.FIVE_SECONDS) {
             return; // shield still active
         }

@@ -2,7 +2,6 @@ package zombiegame.game;
 
 import zombiegame.GameConstants;
 import zombiegame.Launcher;
-import zombiegame.factories.SoundFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -298,8 +297,8 @@ public class GameWorld extends JPanel implements Runnable {
                             zombieTarget.deductALife();
                         } else {
                             gameOver = true;
-                            SoundFactory.stopAllSounds();
-                            SoundFactory.playLoopedSound("sfx/Plants vs. Zombies - Moongrains.wav");
+                            ResourceManager.getInstance().stopAllSounds();
+                            ResourceManager.getInstance().playLoopedSound("Plants vs. Zombies - Moongrains.wav");
                         }
                     }
                     System.out.println("Bullet hit " + (zombieTarget == zombie1 ? "zombie1" : "zombie2"));

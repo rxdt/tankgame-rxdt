@@ -2,8 +2,10 @@ package zombiegame.game;
 
 import zombiegame.factories.ImageFactory;
 
-import javax.sound.sampled.Clip;
+import javax.sound.sampled.*;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,5 +37,60 @@ public class ResourceManager {
             }
         }
         return imageCache.get(key);
+    }
+
+    public Clip getSound(String fileName) {
+        if (!soundCache.containsKey(fileName)) {
+            try {
+                URL soundURL = getClass().getResource("/sfx/" + fileName);
+                if (soundURL == null) {
+                    System.err.println("Sound not found: " + fileName);
+                    return null;
+                }
+                AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundURL);
+                Clip clip = AudioSystem.getClip();
+                clip.open(audioIn);
+                soundCache.put(fileName, clip);
+            } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+        return soundCache.get(fileName);
+    }
+
+    public void playSound(String fileName) {
+        Clip clip = getSound(fileName);
+        if (clip != null) {
+            if (clip.isRunning()) {
+                clip.stop();
+            }
+            clip.setFramePosition(0);
+            clip.start();
+        }
+    }
+
+    public void playLoopedSound(String fileName) {
+        Clip clip = getSound(fileName);
+        if (clip != null) {
+            if (clip.isRunning()) clip.stop();
+            clip.setFramePosition(0);
+            clip.loop(Clip.LOOP_CONTINUOUSLY);
+        }
+    }
+
+    public void stopSound(String fileName) {
+        Clip clip = soundCache.get(fileName);
+        if (clip != null && clip.isRunning()) {
+            clip.stop();
+        }
+    }
+
+    public void stopAllSounds() {
+        for (Clip clip : soundCache.values()) {
+            if (clip != null && clip.isRunning()) {
+                clip.stop();
+            }
+        }
     }
 }
