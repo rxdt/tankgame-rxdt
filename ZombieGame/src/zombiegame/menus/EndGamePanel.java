@@ -1,8 +1,6 @@
 package zombiegame.menus;
 
-import zombiegame.GameConstants;
 import zombiegame.Launcher;
-import zombiegame.game.ResourceManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,11 +13,6 @@ public class EndGamePanel extends JPanel {
 
     public EndGamePanel(Launcher launcher) {
         this.launcher = launcher;
-        menuBackground = ResourceManager.getInstance().getImage("title.png", GameConstants.END_MENU_SCREEN_WIDTH, GameConstants.END_MENU_SCREEN_HEIGHT);
-        if (menuBackground == null) {
-            System.err.println("Error: cannot load menu background image (title.png)");
-            System.exit(-3);
-        }
         this.setBackground(Color.BLACK);
         this.setLayout(null);
 
@@ -28,6 +21,8 @@ public class EndGamePanel extends JPanel {
         start.setBounds(150, 300, 250, 50);
         start.addActionListener(actionEvent -> {
             this.launcher.getGamePanel().resetGame(); // reset game world
+            Thread gameThread = new Thread(this.launcher.getGamePanel());
+            gameThread.start();
             this.launcher.setFrame("game");           // then switch to game view
         });
         JButton exit = new JButton("Exit");
@@ -43,5 +38,10 @@ public class EndGamePanel extends JPanel {
         super.paintComponent(g); // clears the background
         Graphics2D g2 = (Graphics2D) g;
         g2.drawImage(this.menuBackground, 0, 0, this.getWidth(), this.getHeight(), null);
+        g.setFont(new Font("Comic Sans MS", Font.BOLD, 60));
+        g.setColor(Color.CYAN);
+        FontMetrics fm = g.getFontMetrics();
+        int textWidth = fm.stringWidth("Game Over");
+        g.drawString("Game Over", (getWidth() - textWidth) / 2, 200);
     }
 }

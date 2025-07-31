@@ -61,8 +61,10 @@ public class GameWorld extends JPanel implements Runnable {
     private void checkGameOver() {
         int zombie1Health = zombie1.getHealth();
         int zombie2Health = zombie2.getHealth();
-        if (zombie1Health <= 0 || zombie2Health <= 0) {gameOver = true;}
-        this.winnerText = zombie1Health > zombie2Health ? "Green zombie has won!" : "Red zombie has won!";
+        if (zombie1Health <= 0 || zombie2Health <= 0) {
+            gameOver = true;
+            this.winnerText = zombie1Health > zombie2Health ? "Green zombie has won!" : "Red zombie has won!";
+        }
     }
 
     private void removeExpiredPowerUps() {
@@ -107,6 +109,7 @@ public class GameWorld extends JPanel implements Runnable {
     * Reset game to its initial state.
     */
     public void resetGame() {
+        this.gameOver = false;
         InitializeGame(); // Resets the zombie and reinitializes the world
     }
 
@@ -192,6 +195,9 @@ public class GameWorld extends JPanel implements Runnable {
             FontMetrics fm = g2.getFontMetrics();
             int textWidth = fm.stringWidth(winnerText);
             g2.drawString(winnerText, (GameConstants.GAME_SCREEN_WIDTH - textWidth) / 2, GameConstants.GAME_SCREEN_HEIGHT / 2);
+            Timer timer = new Timer(3000, e -> launcher.setFrame("end"));
+            timer.setRepeats(false);
+            timer.start();
         }
     }
 
@@ -277,7 +283,6 @@ public class GameWorld extends JPanel implements Runnable {
                     toRemove.add(bullet);
                     zombieTarget.onHit();
                     System.out.println("Bullet hit " + (zombieTarget == zombie1 ? "zombie1" : "zombie2"));
-                    // TODO: trigger animation or health system
                 }
             }
         }
