@@ -166,7 +166,7 @@ public class Zombie {
         g.fillRect(barX, barY, barWidth, barHeight);
         g.setColor(Color.GREEN);
         g.fillRect(barX, barY, (int)(barWidth * (health / 100.0)), barHeight);
-        // Lives above zombie
+        // Lives count above zombie head
         g.setColor(Color.WHITE);
         g.setFont(new Font("Arial", Font.PLAIN, 14));
         g.drawString("Lives: " + lives, x, y - 25);

@@ -26,6 +26,7 @@ public class GameWorld extends JPanel implements Runnable {
     private BufferedImage healthImg, speedImg, shieldImg;
     private Boolean gameOver = false;
     private String winnerText;
+    private int mapIndex = 1; // starts with 1 as default
 
     public GameWorld(Launcher launcher) {
         this.launcher = launcher;
@@ -126,7 +127,9 @@ public class GameWorld extends JPanel implements Runnable {
          * note class loaders read files from the out folder (build folder in Netbeans) and not the
          * current working directory. When running a jar, class loaders will read from within the jar.
          */
-        background = ResourceManager.getInstance().getImage("map1.png", GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT);
+        this.mapIndex = 1 + (int)(Math.random() * 3); // 1, 2, or 3
+        String mapPath = "map" + mapIndex + ".png";
+        background = ResourceManager.getInstance().getImage(mapPath, GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT);
         walls = new ArrayList<>();
         this.placeWalls();
         BufferedImage z1img = ResourceManager.getInstance().getImage("zombie1.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
