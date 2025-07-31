@@ -222,10 +222,14 @@ public class Zombie {
     }
 
     public void heal(int healAmount) {
+        ResourceManager.getInstance().playSound("zombies-eating.wav");
+        ResourceManager.getInstance().playSound("healing_pickup.wav");
         this.health = Math.min(100, health + healAmount);
     }
 
     public void setSpeedBoost(double multiplier) {
+        ResourceManager.getInstance().playSound("speed_powering_up.wav");
+        System.out.println("Zombie speed at triple " + this.speedMultiplier);
         this.speedMultiplier = multiplier;
     }
 
@@ -234,6 +238,8 @@ public class Zombie {
     }
 
     public void setShield(boolean isShielded) {
+        ResourceManager.getInstance().playSound("shield_item_pick_up_ding.wav");
+        System.out.println("Zombie shielded " + isShielded);
         this.shielded = isShielded;
     }
 

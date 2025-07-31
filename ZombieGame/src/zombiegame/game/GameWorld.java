@@ -135,9 +135,9 @@ public class GameWorld extends JPanel implements Runnable {
         BufferedImage z1img = ResourceManager.getInstance().getImage("zombie1.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
         BufferedImage z2img = ResourceManager.getInstance().getImage("zombie2.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
         BufferedImage bulletImg = ResourceManager.getInstance().getImage("bullet.png", GameConstants.GENERIC_SIZE/2, GameConstants.GENERIC_SIZE/2);
-        this.healthImg = ResourceManager.getInstance().getImage("brain_powerup.png", GameConstants.POWERUP_SIZE, GameConstants.POWERUP_SIZE);
-        this.speedImg = ResourceManager.getInstance().getImage("potion_powerup.png", GameConstants.POWERUP_SIZE, GameConstants.POWERUP_SIZE);
-        this.shieldImg = ResourceManager.getInstance().getImage("injection_powerup.png", GameConstants.POWERUP_SIZE, GameConstants.POWERUP_SIZE);
+        this.healthImg = ResourceManager.getInstance().getImage("health_brain_powerup.png", GameConstants.POWERUP_SIZE, GameConstants.POWERUP_SIZE);
+        this.speedImg = ResourceManager.getInstance().getImage("speed_potion_powerup.png", GameConstants.POWERUP_SIZE, GameConstants.POWERUP_SIZE);
+        this.shieldImg = ResourceManager.getInstance().getImage("shield_injection_powerup.png", GameConstants.POWERUP_SIZE, GameConstants.POWERUP_SIZE);
         if (z1img == null || z2img == null || background == null || bulletImg == null || healthImg == null || speedImg == null || shieldImg == null) {
             System.err.println("Error: could not load png");
             System.exit(-3);
@@ -271,6 +271,7 @@ public class GameWorld extends JPanel implements Runnable {
         for (Bullet bullet : bulletsToRemoveCopy) {
             bullet.update();
             Rectangle bulletBounds = bullet.getBounds();
+            ResourceManager.getInstance().playSound("bullet-shot.wav");
             // 1. Check wall collisions
             for (Wall wall : walls) {
                 if (bulletBounds.intersects(wall.getBounds())) {
