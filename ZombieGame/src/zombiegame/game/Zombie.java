@@ -42,7 +42,7 @@ public class Zombie extends GameObject {
     private int explosionFrame = 0;
     private static final int MAX_EXPLOSION_FRAMES = ResourceFactory.explosionFrames.length;
     private static final int EXPLOSION_FRAME_INTERVAL = 100;
-    private static final int RESPAWN_DELAY = 1500;
+    private static final int RESPAWN_DELAY = 2000;
     private long explosionStartTime = 0;
 
     Zombie(float x, float y, float vx, float vy, float angle, BufferedImage img) {
@@ -52,6 +52,11 @@ public class Zombie extends GameObject {
         this.vy = vy;
         this.img = img;
         this.angle = angle;
+    }
+
+    @Override
+    public Rectangle getBounds() {
+        return new Rectangle((int)this.x, (int)this.y, this.img.getWidth(), this.img.getHeight());
     }
 
    public void pressed(Direction dir) {
@@ -280,7 +285,7 @@ public class Zombie extends GameObject {
     }
 
     private void resetPowerUps() {
-        if (System.currentTimeMillis() - boostTimer > GameConstants.BOOST_DURATION) {
+        if (System.currentTimeMillis() - boostTimer > GameConstants.POWERUP_DURATION) {
             speedMultiplier = 1.0;
             shielded = false;
         }
@@ -303,6 +308,6 @@ public class Zombie extends GameObject {
     }
 
     public boolean isShieldActive() {
-        return this.shielded && (System.currentTimeMillis() - boostTimer <= GameConstants.BOOST_DURATION);
+        return this.shielded && (System.currentTimeMillis() - boostTimer <= GameConstants.POWERUP_DURATION);
     }
 }

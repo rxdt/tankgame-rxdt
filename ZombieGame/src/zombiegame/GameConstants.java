@@ -22,7 +22,8 @@ public class GameConstants {
     }};
 
     public static final int MAX_HEALTH = 100;
-    public static final int BOOST_DURATION = 10000; // 10 seconds
+    public static final int POWERUP_DURATION = 8000; // 8 seconds
+    public static final int POWERUP_SPAWN_COOLDOWN = 10000;
     public static final int LIVES = 3;
     public static final int HIT_FLASH_DURATION_MS = 200;
 }

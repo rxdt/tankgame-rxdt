@@ -20,10 +20,8 @@ public class GameWorld extends JPanel implements Runnable {
     private final Launcher launcher;
     private BufferedImage background;
     private List<Wall> walls;
-    final int TILE_SIZE = GameConstants.GENERIC_SIZE;
     private List<PowerUp> powerUps = new ArrayList<>();
     private long lastPowerUpSpawnTime = 0;
-    private final long powerUpSpawnCooldown = GameConstants.BOOST_DURATION;
     private BufferedImage healthImg, speedImg, shieldImg;
     private Boolean gameOver = false;
     private String winnerText;
@@ -70,12 +68,13 @@ public class GameWorld extends JPanel implements Runnable {
     }
 
     private void removeExpiredPowerUps() {
-        long now = System.currentTimeMillis();
-        powerUps.removeIf(powerUp -> now - powerUp.getSpawnTime() > GameConstants.BOOST_DURATION);
+        synchronized (powerUps) {
+            powerUps.removeIf(powerUp -> System.currentTimeMillis() - powerUp.getSpawnTime() > GameConstants.POWERUP_DURATION);
+        }
     }
 
     private void createRandomPowerUp() {
-        if (System.currentTimeMillis() - lastPowerUpSpawnTime < powerUpSpawnCooldown) return; // hasn't been long enough
+        if (System.currentTimeMillis() - this.lastPowerUpSpawnTime < GameConstants.POWERUP_SPAWN_COOLDOWN) return; // hasn't been long enough
         int x = (int)(Math.random() * (GameConstants.GAME_SCREEN_WIDTH - 32));
         int y = (int)(Math.random() * (GameConstants.GAME_SCREEN_HEIGHT - 32));
         // Prevent spawning inside walls
@@ -83,6 +82,8 @@ public class GameWorld extends JPanel implements Runnable {
         for (Wall wall : this.walls) {
             if (spawnArea.intersects(wall.getBounds())) return;
         }
+        // Prevent spawning on zombie
+        if (spawnArea.intersects(zombie1.getBounds()) || spawnArea.intersects(zombie2.getBounds())) return;
         PowerUp powerUp;
         int type = (int)(Math.random() * 3); // get a random number between 0–2
         switch (type) {
@@ -98,13 +99,15 @@ public class GameWorld extends JPanel implements Runnable {
 
     private void checkPowerUpPickup(Zombie zombie) {
         List<PowerUp> toRemove = new ArrayList<>();
-        for (PowerUp powerUp : powerUps) {
-            if (powerUp.getBounds().intersects(new Rectangle(zombie.getX(), zombie.getY(), zombie.getImage().getWidth(), zombie.getImage().getHeight()))) {
-                powerUp.applyTo(zombie);
-                toRemove.add(powerUp);
+        synchronized (powerUps) {
+            for (PowerUp powerUp : powerUps) {
+                if (powerUp.getBounds().intersects(new Rectangle(zombie.getX(), zombie.getY(), zombie.getImage().getWidth(), zombie.getImage().getHeight()))) {
+                    powerUp.applyTo(zombie);
+                    toRemove.add(powerUp);
+                }
             }
+            powerUps.removeAll(toRemove);
         }
-        powerUps.removeAll(toRemove);
     }
 
     /**
@@ -223,9 +226,10 @@ public class GameWorld extends JPanel implements Runnable {
         zombie2.drawImage(buffer);
         for (Bullet b : zombie1.getBullets()) b.draw(buffer);
         for (Bullet b : zombie2.getBullets()) b.draw(buffer);
-
-        for (PowerUp p : powerUps) {
-            p.draw(buffer);
+        synchronized (powerUps) {
+            for (PowerUp p : powerUps) {
+                p.draw(buffer);
+            }
         }
         // Set viewport dimensions for each player
         int viewWidth = GameConstants.GAME_SCREEN_WIDTH / 2;
@@ -265,51 +269,6 @@ public class GameWorld extends JPanel implements Runnable {
         super.addNotify();
         this.requestFocusInWindow(); // ensure events are captured when panel appears
     }
-
-//    private void placeWalls() {
-//        walls = new ArrayList<>();
-//        BufferedImage sunflower = ResourceManager.getInstance().getImage("sunflower.png", TILE_SIZE, TILE_SIZE);
-//        BufferedImage bush = ResourceManager.getInstance().getImage("bush.png", TILE_SIZE, TILE_SIZE);
-//        BufferedImage daisies = ResourceManager.getInstance().getImage("daisies.png", TILE_SIZE, TILE_SIZE);
-//        BufferedImage blueFlowers = ResourceManager.getInstance().getImage("blue_flowers.png", TILE_SIZE, TILE_SIZE);
-//        BufferedImage roses = ResourceManager.getInstance().getImage("roses.png", TILE_SIZE, TILE_SIZE);
-//        BufferedImage log = ResourceManager.getInstance().getImage("log.png", TILE_SIZE*2, TILE_SIZE*2);
-//        BufferedImage tree = ResourceManager.getInstance().getImage("trees.png", TILE_SIZE, TILE_SIZE);
-//
-//        // Grid placement: addWallAt(col, row, image)
-//        addItemAtSpot(1, 2, daisies, TILE_SIZE, TILE_SIZE, true);
-//        addItemAtSpot(2, 2, sunflower, TILE_SIZE, TILE_SIZE, true);
-//        addItemAtSpot(3, 2, bush, TILE_SIZE, TILE_SIZE, false);
-//        addItemAtSpot(3, 3, blueFlowers, TILE_SIZE, TILE_SIZE, true);
-//        // Bottom-left
-//        addItemAtSpot(2, 6, blueFlowers, TILE_SIZE, TILE_SIZE, true);
-//        addItemAtSpot(1, 6, roses, TILE_SIZE, TILE_SIZE, true);
-//        // Diagonal stack
-//        addItemAtSpot(4, 7, daisies, TILE_SIZE, TILE_SIZE, true);
-//        addItemAtSpot(3, 8, blueFlowers, TILE_SIZE, TILE_SIZE, true);
-////        addItemAtSpot(7, 7, log, TILE_SIZE*2,TILE_SIZE*2, false);
-//        // Vertical column
-////        addItemAtSpot(8, 0, log, TILE_SIZE*2, TILE_SIZE*2, false);
-//        addItemAtSpot(8, 4, blueFlowers, TILE_SIZE, TILE_SIZE, true);
-//        addItemAtSpot(9, 4, daisies, TILE_SIZE, TILE_SIZE, true);
-//        // Top-right stack
-//        addItemAtSpot(13, 2, bush, TILE_SIZE, TILE_SIZE, false);
-//        addItemAtSpot(13, 3, sunflower, TILE_SIZE, TILE_SIZE, true);
-//        addItemAtSpot(13, 4, tree, TILE_SIZE, TILE_SIZE, false);
-//        addItemAtSpot(10, 0, daisies, TILE_SIZE, TILE_SIZE, true);
-//        // Bottom-right
-//        addItemAtSpot(11, 8, bush, TILE_SIZE, TILE_SIZE, false);
-//        addItemAtSpot(12, 8, daisies, TILE_SIZE, TILE_SIZE, true);
-//        addItemAtSpot(13, 8, roses, TILE_SIZE, TILE_SIZE, true);
-//        addItemAtSpot(14, 8, bush, TILE_SIZE, TILE_SIZE, false);
-//    }
-
-//    private void addItemAtSpot(int col, int row, BufferedImage img, int width, int height, Boolean isBreakable) {
-//        if (!isBreakable) {
-//            walls.add(new Wall(col * TILE_SIZE, row * TILE_SIZE, width, height, img));
-//        }
-//        walls.add(new BreakableWall(col * TILE_SIZE, row * TILE_SIZE, width, height, img));
-//    }
 
     // handles bullet movement, deteects wall collisipn, removes bullets that hit walls
     private void updateBullets(Zombie shooter, Zombie zombieTarget) {
