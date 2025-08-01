@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class GameWorld extends JPanel implements Runnable {
     private BufferedImage healthImg, speedImg, shieldImg;
     private Boolean gameOver = false;
     private String winnerText;
-    private int mapIndex = 1; // starts with 1 as default
+    private List<GameObject> gameObjects;
 
     public GameWorld(Launcher launcher) {
         this.launcher = launcher;
@@ -79,7 +80,7 @@ public class GameWorld extends JPanel implements Runnable {
         int y = (int)(Math.random() * (GameConstants.GAME_SCREEN_HEIGHT - 32));
         // Prevent spawning inside walls
         Rectangle spawnArea = new Rectangle(x, y, GameConstants.POWERUP_SIZE, GameConstants.POWERUP_SIZE);
-        for (Wall wall : walls) {
+        for (Wall wall : this.walls) {
             if (spawnArea.intersects(wall.getBounds())) return;
         }
         PowerUp powerUp;
@@ -123,22 +124,18 @@ public class GameWorld extends JPanel implements Runnable {
         this.world = new BufferedImage(GameConstants.GAME_SCREEN_WIDTH,
                 GameConstants.GAME_SCREEN_HEIGHT,
                 BufferedImage.TYPE_INT_RGB);
+        this.walls = new ArrayList<>();
         /*
          * note class loaders read files from the out folder (build folder in Netbeans) and not the
          * current working directory. When running a jar, class loaders will read from within the jar.
          */
-        this.mapIndex = 1 + (int)(Math.random() * 3); // 1, 2, or 3
-        String mapPath = "map" + mapIndex + ".png";
-        background = ResourceManager.getInstance().getImage(mapPath, GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT);
-        walls = new ArrayList<>();
-        this.placeWalls();
-        BufferedImage z1img = ResourceManager.getInstance().getImage("zombie1.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
-        BufferedImage z2img = ResourceManager.getInstance().getImage("zombie2.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
-        BufferedImage bulletImg = ResourceManager.getInstance().getImage("bullet.png", GameConstants.GENERIC_SIZE/2, GameConstants.GENERIC_SIZE/2);
-        this.healthImg = ResourceManager.getInstance().getImage("health_brain_powerup.png", GameConstants.POWERUP_SIZE, GameConstants.POWERUP_SIZE);
-        this.speedImg = ResourceManager.getInstance().getImage("speed_potion_powerup.png", GameConstants.POWERUP_SIZE, GameConstants.POWERUP_SIZE);
-        this.shieldImg = ResourceManager.getInstance().getImage("shield_injection_powerup.png", GameConstants.POWERUP_SIZE, GameConstants.POWERUP_SIZE);
-        if (z1img == null || z2img == null || background == null || bulletImg == null || healthImg == null || speedImg == null || shieldImg == null) {
+        BufferedImage z1img = ResourceManager.getInstance().getImage("vfx/zombie1.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
+        BufferedImage z2img = ResourceManager.getInstance().getImage("vfx/zombie2.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
+        BufferedImage bulletImg = ResourceManager.getInstance().getImage("vfx/bullet.png", GameConstants.GENERIC_SIZE/2, GameConstants.GENERIC_SIZE/2);
+        this.healthImg = ResourceManager.getInstance().getImage("vfx/health_brain_powerup.png", GameConstants.POWERUP_SIZE, GameConstants.POWERUP_SIZE);
+        this.speedImg = ResourceManager.getInstance().getImage("vfx/speed_potion_powerup.png", GameConstants.POWERUP_SIZE, GameConstants.POWERUP_SIZE);
+        this.shieldImg = ResourceManager.getInstance().getImage("vfx/shield_injection_powerup.png", GameConstants.POWERUP_SIZE, GameConstants.POWERUP_SIZE);
+        if (z1img == null || z2img == null || bulletImg == null || healthImg == null || speedImg == null || shieldImg == null) {
             System.err.println("Error: could not load png");
             System.exit(-3);
         }
@@ -153,8 +150,59 @@ public class GameWorld extends JPanel implements Runnable {
         this.addKeyListener(
             new ZombieControl(zombie2, KeyEvent.VK_DOWN, KeyEvent.VK_UP, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_ENTER)
         );
+        try {
+            loadMap();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         this.setFocusable(true);        // allow GameWorld to be focused
         this.requestFocusInWindow();    // ask Java to give it focus when this panel appears
+    }
+
+    public void loadMap() throws IOException {
+        List<BufferedImage> breakable = new ArrayList<>();
+        List<BufferedImage> nonBreakable = new ArrayList<>();
+        // breakable - flowers
+        breakable.add(ResourceManager.getInstance().getImage("vfx/sunflower.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE));
+        breakable.add(ResourceManager.getInstance().getImage("vfx/daisies.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE));
+        breakable.add(ResourceManager.getInstance().getImage("vfx/blue_flowers.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE));
+        breakable.add(ResourceManager.getInstance().getImage("vfx/roses.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE));
+        // non-breakable - non-flowers
+        nonBreakable.add(ResourceManager.getInstance().getImage("vfx/bush.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE));
+        nonBreakable.add(ResourceManager.getInstance().getImage("vfx/log.png", GameConstants.GENERIC_SIZE*2, GameConstants.GENERIC_SIZE*2));
+        nonBreakable.add(ResourceManager.getInstance().getImage("vfx/trees.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE));
+
+        int mapIndex = 1 + (int)(Math.random() * 3); // 1, 2, or 3
+        String mapPath = "vfx/map" + mapIndex + ".png";
+        this.background = ResourceManager.getInstance().getImage(mapPath, GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT);
+
+        InputStream input = getClass().getClassLoader().getResourceAsStream("maps/map" + mapIndex + ".csv");
+        if (input == null) {
+            throw new FileNotFoundException("Could not find: maps/map" + mapIndex + ".csv");
+        }
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(input));
+        String line;
+        int row = 0;
+        while ((line = bufferedReader.readLine()) != null) {
+            String[] lineArray = line.split(",");
+            for (int column = 0; column < lineArray.length; column++) {
+                int code = Integer.parseInt(lineArray[column]);
+                int x = column * GameConstants.GENERIC_SIZE;
+                int y = row * GameConstants.GENERIC_SIZE;
+                switch (code) {
+                    case 1: // breakable flowers
+                        this.walls.add(new Wall(x, y, GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE,
+                                breakable.get((int)(Math.random() * breakable.size()))));
+                        break;
+                    case 2: // non-breakable
+                        this.walls.add(new BreakableWall(x, y, GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE,
+                                nonBreakable.get((int)(Math.random() * nonBreakable.size()))));
+                        break;
+                }
+            }
+            row++;
+        }
+        bufferedReader.close();
     }
 
     // change as we like, allows us to draw without casting to ints
@@ -167,7 +215,7 @@ public class GameWorld extends JPanel implements Runnable {
         // Draw full world to offscreen buffer
         Graphics2D buffer = world.createGraphics();
         buffer.setRenderingHints(GameConstants.RENDER_HINTS);
-        buffer.drawImage(background, 0, 0, null);
+        buffer.drawImage(this.background, 0, 0, null);
         for (Wall wall : walls) {
             wall.draw(buffer);
         }
@@ -218,50 +266,50 @@ public class GameWorld extends JPanel implements Runnable {
         this.requestFocusInWindow(); // ensure events are captured when panel appears
     }
 
-    private void placeWalls() {
-        walls = new ArrayList<>();
-        BufferedImage sunflower = ResourceManager.getInstance().getImage("sunflower.png", TILE_SIZE, TILE_SIZE);
-        BufferedImage bush = ResourceManager.getInstance().getImage("bush.png", TILE_SIZE, TILE_SIZE);
-        BufferedImage daisies = ResourceManager.getInstance().getImage("daisies.png", TILE_SIZE, TILE_SIZE);
-        BufferedImage blueFlowers = ResourceManager.getInstance().getImage("blue_flowers.png", TILE_SIZE, TILE_SIZE);
-        BufferedImage roses = ResourceManager.getInstance().getImage("roses.png", TILE_SIZE, TILE_SIZE);
-        BufferedImage log = ResourceManager.getInstance().getImage("log.png", TILE_SIZE*2, TILE_SIZE*2);
-        BufferedImage tree = ResourceManager.getInstance().getImage("trees.png", TILE_SIZE, TILE_SIZE);
+//    private void placeWalls() {
+//        walls = new ArrayList<>();
+//        BufferedImage sunflower = ResourceManager.getInstance().getImage("sunflower.png", TILE_SIZE, TILE_SIZE);
+//        BufferedImage bush = ResourceManager.getInstance().getImage("bush.png", TILE_SIZE, TILE_SIZE);
+//        BufferedImage daisies = ResourceManager.getInstance().getImage("daisies.png", TILE_SIZE, TILE_SIZE);
+//        BufferedImage blueFlowers = ResourceManager.getInstance().getImage("blue_flowers.png", TILE_SIZE, TILE_SIZE);
+//        BufferedImage roses = ResourceManager.getInstance().getImage("roses.png", TILE_SIZE, TILE_SIZE);
+//        BufferedImage log = ResourceManager.getInstance().getImage("log.png", TILE_SIZE*2, TILE_SIZE*2);
+//        BufferedImage tree = ResourceManager.getInstance().getImage("trees.png", TILE_SIZE, TILE_SIZE);
+//
+//        // Grid placement: addWallAt(col, row, image)
+//        addItemAtSpot(1, 2, daisies, TILE_SIZE, TILE_SIZE, true);
+//        addItemAtSpot(2, 2, sunflower, TILE_SIZE, TILE_SIZE, true);
+//        addItemAtSpot(3, 2, bush, TILE_SIZE, TILE_SIZE, false);
+//        addItemAtSpot(3, 3, blueFlowers, TILE_SIZE, TILE_SIZE, true);
+//        // Bottom-left
+//        addItemAtSpot(2, 6, blueFlowers, TILE_SIZE, TILE_SIZE, true);
+//        addItemAtSpot(1, 6, roses, TILE_SIZE, TILE_SIZE, true);
+//        // Diagonal stack
+//        addItemAtSpot(4, 7, daisies, TILE_SIZE, TILE_SIZE, true);
+//        addItemAtSpot(3, 8, blueFlowers, TILE_SIZE, TILE_SIZE, true);
+////        addItemAtSpot(7, 7, log, TILE_SIZE*2,TILE_SIZE*2, false);
+//        // Vertical column
+////        addItemAtSpot(8, 0, log, TILE_SIZE*2, TILE_SIZE*2, false);
+//        addItemAtSpot(8, 4, blueFlowers, TILE_SIZE, TILE_SIZE, true);
+//        addItemAtSpot(9, 4, daisies, TILE_SIZE, TILE_SIZE, true);
+//        // Top-right stack
+//        addItemAtSpot(13, 2, bush, TILE_SIZE, TILE_SIZE, false);
+//        addItemAtSpot(13, 3, sunflower, TILE_SIZE, TILE_SIZE, true);
+//        addItemAtSpot(13, 4, tree, TILE_SIZE, TILE_SIZE, false);
+//        addItemAtSpot(10, 0, daisies, TILE_SIZE, TILE_SIZE, true);
+//        // Bottom-right
+//        addItemAtSpot(11, 8, bush, TILE_SIZE, TILE_SIZE, false);
+//        addItemAtSpot(12, 8, daisies, TILE_SIZE, TILE_SIZE, true);
+//        addItemAtSpot(13, 8, roses, TILE_SIZE, TILE_SIZE, true);
+//        addItemAtSpot(14, 8, bush, TILE_SIZE, TILE_SIZE, false);
+//    }
 
-        // Grid placement: addWallAt(col, row, image)
-        addItemAtSpot(1, 2, daisies, TILE_SIZE, TILE_SIZE, true);
-        addItemAtSpot(2, 2, sunflower, TILE_SIZE, TILE_SIZE, true);
-        addItemAtSpot(3, 2, bush, TILE_SIZE, TILE_SIZE, false);
-        addItemAtSpot(3, 3, blueFlowers, TILE_SIZE, TILE_SIZE, true);
-        // Bottom-left
-        addItemAtSpot(2, 6, blueFlowers, TILE_SIZE, TILE_SIZE, true);
-        addItemAtSpot(1, 6, roses, TILE_SIZE, TILE_SIZE, true);
-        // Diagonal stack
-        addItemAtSpot(4, 7, daisies, TILE_SIZE, TILE_SIZE, true);
-        addItemAtSpot(3, 8, blueFlowers, TILE_SIZE, TILE_SIZE, true);
-//        addItemAtSpot(7, 7, log, TILE_SIZE*2,TILE_SIZE*2, false);
-        // Vertical column
-//        addItemAtSpot(8, 0, log, TILE_SIZE*2, TILE_SIZE*2, false);
-        addItemAtSpot(8, 4, blueFlowers, TILE_SIZE, TILE_SIZE, true);
-        addItemAtSpot(9, 4, daisies, TILE_SIZE, TILE_SIZE, true);
-        // Top-right stack
-        addItemAtSpot(13, 2, bush, TILE_SIZE, TILE_SIZE, false);
-        addItemAtSpot(13, 3, sunflower, TILE_SIZE, TILE_SIZE, true);
-        addItemAtSpot(13, 4, tree, TILE_SIZE, TILE_SIZE, false);
-        addItemAtSpot(10, 0, daisies, TILE_SIZE, TILE_SIZE, true);
-        // Bottom-right
-        addItemAtSpot(11, 8, bush, TILE_SIZE, TILE_SIZE, false);
-        addItemAtSpot(12, 8, daisies, TILE_SIZE, TILE_SIZE, true);
-        addItemAtSpot(13, 8, roses, TILE_SIZE, TILE_SIZE, true);
-        addItemAtSpot(14, 8, bush, TILE_SIZE, TILE_SIZE, false);
-    }
-
-    private void addItemAtSpot(int col, int row, BufferedImage img, int width, int height, Boolean isBreakable) {
-        if (!isBreakable) {
-            walls.add(new Wall(col * TILE_SIZE, row * TILE_SIZE, width, height, img));
-        }
-        walls.add(new BreakableWall(col * TILE_SIZE, row * TILE_SIZE, width, height, img));
-    }
+//    private void addItemAtSpot(int col, int row, BufferedImage img, int width, int height, Boolean isBreakable) {
+//        if (!isBreakable) {
+//            walls.add(new Wall(col * TILE_SIZE, row * TILE_SIZE, width, height, img));
+//        }
+//        walls.add(new BreakableWall(col * TILE_SIZE, row * TILE_SIZE, width, height, img));
+//    }
 
     // handles bullet movement, deteects wall collisipn, removes bullets that hit walls
     private void updateBullets(Zombie shooter, Zombie zombieTarget) {
