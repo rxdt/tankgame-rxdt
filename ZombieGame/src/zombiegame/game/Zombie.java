@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
-public class Zombie {
+public class Zombie extends GameObject {
     public enum Direction {UP, DOWN, LEFT, RIGHT, SHOOT}
     private final EnumSet<Direction> keysPressed = EnumSet.noneOf(Direction.class);
 
@@ -45,10 +45,6 @@ public class Zombie {
         this.img = img;
         this.angle = angle;
     }
-
-    void setX(float x){ this.x = x; }
-
-    void setY(float y) { this. y = y;}
 
    public void pressed(Direction dir) {
         keysPressed.add(dir);
@@ -219,6 +215,8 @@ public class Zombie {
             return; // shield still active
         }
         this.health -= 5; // else damage the zombie
+        this.isHit = true;
+        this.hitTime = System.currentTimeMillis();
     }
 
     public void heal(int healAmount) {

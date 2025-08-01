@@ -3,8 +3,7 @@ package zombiegame.game;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public abstract class PowerUp {
-    protected int x, y;
+public abstract class PowerUp extends GameObject {
     protected BufferedImage img;
     protected Rectangle bounds;
     private long spawnTime;

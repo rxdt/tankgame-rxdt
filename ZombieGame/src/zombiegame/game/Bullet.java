@@ -4,7 +4,7 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
-public class Bullet {
+public class Bullet extends GameObject {
     private float x, y;
     private float angle;
     private float speed = 10f;

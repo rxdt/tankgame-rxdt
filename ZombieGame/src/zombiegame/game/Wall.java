@@ -3,8 +3,8 @@ package zombiegame.game;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public class Wall {
-    private int x, y, width, height;
+public class Wall extends GameObject {
+
     private BufferedImage img;
 
     public Wall(int x, int y, int width, int height, BufferedImage img) {
@@ -21,14 +21,6 @@ public class Wall {
 
     public void draw(Graphics2D g) {
         g.drawImage(img, x, y, width, height, null);
-    }
-
-    protected int getX() {
-        return this.x;
-    }
-
-    protected int getY() {
-        return this.y;
     }
 
     protected BufferedImage getImage() {
