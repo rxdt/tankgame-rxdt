@@ -341,17 +341,15 @@ public class GameWorld extends JPanel implements Runnable {
                     bulletsToRemove.add(bullet);
                     if (!zombieTarget.isShieldActive()) {
                         zombieTarget.onHit();
-                    }
-                    if (zombieTarget.getHealth() <= 0) {
-                        if (zombieTarget.getLives() > 1) {
+                        if (zombieTarget.getHealth() <= 0 && zombieTarget.getLives() >= 1) {
                             zombieTarget.deductALife();
-                        } else {
+                        }
+                        if (zombieTarget.getLives() <= 0) {
                             gameOver = true;
                             ResourceManager.getInstance().stopAllSounds();
                             ResourceManager.getInstance().playLoopedSound("Plants vs. Zombies - Moongrains.wav");
                         }
                     }
-                    System.out.println("Bullet hit " + (zombieTarget == zombie1 ? "zombie1" : "zombie2"));
                 }
             }
         }

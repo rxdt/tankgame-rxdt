@@ -172,7 +172,6 @@ public class Zombie extends GameObject {
         at.rotate(Math.toRadians(this.angle), this.img.getWidth() / 2.0, this.img.getHeight() / 2.0);
         if (isHit && (System.currentTimeMillis() - hitTime < GameConstants.HIT_FLASH_DURATION_MS)) {
             // Glow red if hit
-            System.out.println("Render red-tinted zombie");
             BufferedImage tinted = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_ARGB);
             Graphics2D g2d = tinted.createGraphics();
             g2d.drawImage(img, 0, 0, null);
@@ -246,18 +245,9 @@ public class Zombie extends GameObject {
     // trigger red flash and play hit sound, explodw if life lost
     public void onHit() {
         ResourceManager.getInstance().playSound("zombie_hit.wav");
-        if (this.isShieldActive()) {
-            return; // shield still active
-        }
-        this.health -= 5; // else damage the zombie
+        this.health -= 5;
         this.isHit = true;
         this.hitTime = System.currentTimeMillis();
-        if (this.health <= 0 && !exploding) {
-            lives--;
-            exploding = true;
-            explosionFrame = 0;
-            explosionStartTime = System.currentTimeMillis(); // ← starts explosion timer
-        }
     }
 
     public void heal(int healAmount) {
@@ -307,9 +297,9 @@ public class Zombie extends GameObject {
     public void deductALife() {
         lives--;
         // trigger explosion
-        this.exploding = true;
-        this.explosionFrame = 0;
-        explosionStartTime = System.currentTimeMillis();
+        exploding = true;
+        explosionFrame = 0;
+        explosionStartTime = System.currentTimeMillis(); // ← starts explosion timer
     }
 
     public boolean isShieldActive() {
