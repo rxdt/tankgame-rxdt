@@ -1,6 +1,7 @@
 package zombiegame.game;
 
 import zombiegame.GameConstants;
+import zombiegame.factories.ResourceFactory;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -37,6 +38,13 @@ public class Zombie extends GameObject {
     private double speedMultiplier = 1.0;
     private long boostTimer = 0;
 
+    private boolean exploding = false;
+    private int explosionFrame = 0;
+    private static final int MAX_EXPLOSION_FRAMES = ResourceFactory.explosionFrames.length;
+    private static final int EXPLOSION_FRAME_INTERVAL = 100;
+    private static final int RESPAWN_DELAY = 1500;
+    private long explosionStartTime = 0;
+
     Zombie(float x, float y, float vx, float vy, float angle, BufferedImage img) {
         this.x = x;
         this.y = y;
@@ -55,6 +63,23 @@ public class Zombie extends GameObject {
     }
 
     public void update(List<Wall> walls, Zombie otherZombie) {
+        if (exploding) {
+            long elapsed = System.currentTimeMillis() - explosionStartTime;
+            if (explosionFrame < MAX_EXPLOSION_FRAMES && elapsed >= explosionFrame * EXPLOSION_FRAME_INTERVAL) {
+                explosionFrame++;
+            }
+            // Wait before respawn
+            if (explosionFrame >= MAX_EXPLOSION_FRAMES && elapsed >= MAX_EXPLOSION_FRAMES * EXPLOSION_FRAME_INTERVAL + RESPAWN_DELAY) {
+                if (lives > 0) {
+                    x = 50 + (float)(Math.random() * (GameConstants.GAME_SCREEN_WIDTH - 100));
+                    y = 50 + (float)(Math.random() * (GameConstants.GAME_SCREEN_HEIGHT - 100));
+                    health = GameConstants.MAX_HEALTH;
+                    exploding = false;
+                    explosionFrame = 0;
+                }
+            }
+            return;
+        }
         resetPowerUps();
         float originalX = x;
         float originalY = y;
@@ -132,6 +157,16 @@ public class Zombie extends GameObject {
     }
 
     public void drawImage(Graphics2D g) {
+        if (exploding) {
+            long elapsed = System.currentTimeMillis() - explosionStartTime;
+            if (explosionFrame < ResourceFactory.explosionFrames.length && elapsed >= explosionFrame * EXPLOSION_FRAME_INTERVAL) {
+                explosionFrame++;
+            }
+            if (explosionFrame < ResourceFactory.explosionFrames.length) {
+                g.drawImage(ResourceFactory.explosionFrames[explosionFrame], (int)x, (int)y, null);
+            }
+            return;
+        }
         AffineTransform at = new AffineTransform();
         at.translate(this.x, this.y);
         at.rotate(Math.toRadians(this.angle), this.img.getWidth() / 2.0, this.img.getHeight() / 2.0);
@@ -208,7 +243,7 @@ public class Zombie extends GameObject {
         return this.img;
     }
 
-    // trigger red flash and play hit sound
+    // trigger red flash and play hit sound, explodw if life lost
     public void onHit() {
         ResourceManager.getInstance().playSound("zombie_hit.wav");
         if (this.isShieldActive()) {
@@ -217,6 +252,12 @@ public class Zombie extends GameObject {
         this.health -= 5; // else damage the zombie
         this.isHit = true;
         this.hitTime = System.currentTimeMillis();
+        if (this.health <= 0 && !exploding) {
+            lives--;
+            exploding = true;
+            explosionFrame = 0;
+            explosionStartTime = System.currentTimeMillis(); // ← starts explosion timer
+        }
     }
 
     public void heal(int healAmount) {
@@ -265,7 +306,10 @@ public class Zombie extends GameObject {
 
     public void deductALife() {
         lives--;
-        this.health = GameConstants.MAX_HEALTH; // reset health
+        // trigger explosion
+        this.exploding = true;
+        this.explosionFrame = 0;
+        explosionStartTime = System.currentTimeMillis();
     }
 
     public boolean isShieldActive() {

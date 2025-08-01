@@ -102,10 +102,6 @@ public class Launcher {
         return this.gamePanel;
     }
 
-    public JFrame getJf() {
-        return jf;
-    }
-
     /**
      * close game and send signal to kill JVM as well.
      */

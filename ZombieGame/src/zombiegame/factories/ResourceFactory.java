@@ -3,7 +3,10 @@ package zombiegame.factories;
 import zombiegame.GameConstants;
 import zombiegame.game.ResourceManager;
 
+import java.awt.image.BufferedImage;
+
 public class ResourceFactory {
+    public static BufferedImage[] explosionFrames;
 
     public static void preloadResources() {
         // images
@@ -26,5 +29,16 @@ public class ResourceFactory {
         ResourceManager.getInstance().getSound("speed_powering_up.wav");
         ResourceManager.getInstance().getSound("shield_item_pick_up_ding.wav");
         ResourceManager.getInstance().getSound("bullet-shot.wav");
+        // explosions
+        explosionFrames = new BufferedImage[5];
+        for (int i = 0; i < 5; i++) {
+            String x = "explosion" + i + ".png";
+            System.out.println(x);
+            explosionFrames[i] = ResourceManager.getInstance().getImage(
+                    x,
+                    GameConstants.GENERIC_SIZE,
+                    GameConstants.GENERIC_SIZE
+            );
+        }
     }
 }

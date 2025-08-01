@@ -19,10 +19,10 @@ public class GameWorld extends JPanel implements Runnable {
     private final Launcher launcher;
     private BufferedImage background;
     private List<Wall> walls;
-    final int TILE_SIZE = 64;
+    final int TILE_SIZE = GameConstants.GENERIC_SIZE;
     private List<PowerUp> powerUps = new ArrayList<>();
     private long lastPowerUpSpawnTime = 0;
-    private final long powerUpSpawnCooldown = 7000; // 7 seconds
+    private final long powerUpSpawnCooldown = GameConstants.BOOST_DURATION;
     private BufferedImage healthImg, speedImg, shieldImg;
     private Boolean gameOver = false;
     private String winnerText;
@@ -60,17 +60,17 @@ public class GameWorld extends JPanel implements Runnable {
     }
 
     private void checkGameOver() {
-        int zombie1Health = zombie1.getHealth();
-        int zombie2Health = zombie2.getHealth();
-        if (zombie1Health <= 0 || zombie2Health <= 0) {
+        int zombie1Lives = zombie1.getLives();
+        int zombie2Lives = zombie2.getLives();
+        if (zombie1Lives <= 0 || zombie2Lives <= 0) {
             gameOver = true;
-            this.winnerText = zombie1Health > zombie2Health ? "Green zombie has won!" : "Red zombie has won!";
+            this.winnerText = zombie1Lives > zombie2Lives ? "Green zombie has won!" : "Red zombie has won!";
         }
     }
 
     private void removeExpiredPowerUps() {
         long now = System.currentTimeMillis();
-        powerUps.removeIf(powerUp -> now - powerUp.getSpawnTime() > 7000); // Remove after 7 sec
+        powerUps.removeIf(powerUp -> now - powerUp.getSpawnTime() > GameConstants.BOOST_DURATION);
     }
 
     private void createRandomPowerUp() {
@@ -192,7 +192,6 @@ public class GameWorld extends JPanel implements Runnable {
         if (gameOver && winnerText != null) {
             g2.setColor(new Color(0, 0, 0, 150));
             g2.fillRect(0, 0, GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT);
-
             g2.setColor(Color.CYAN);
             g2.setFont(new Font("Papyrus", Font.BOLD, 70));
             FontMetrics fm = g2.getFontMetrics();
