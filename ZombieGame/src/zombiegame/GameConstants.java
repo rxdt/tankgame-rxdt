@@ -21,6 +21,8 @@ public class GameConstants {
         put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     }};
 
-    public static final int FIVE_SECONDS = 5000;
     public static final int MAX_HEALTH = 100;
+    public static final int BOOST_DURATION = 10000; // 10 seconds
+    public static final int LIVES = 3;
+    public static final int HIT_FLASH_DURATION_MS = 200;
 }

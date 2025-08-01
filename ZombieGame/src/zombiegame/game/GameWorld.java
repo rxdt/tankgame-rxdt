@@ -240,9 +240,9 @@ public class GameWorld extends JPanel implements Runnable {
         // Diagonal stack
         addItemAtSpot(4, 7, daisies, TILE_SIZE, TILE_SIZE, true);
         addItemAtSpot(3, 8, blueFlowers, TILE_SIZE, TILE_SIZE, true);
-        addItemAtSpot(7, 7, log, TILE_SIZE*2,TILE_SIZE*2, false);
+//        addItemAtSpot(7, 7, log, TILE_SIZE*2,TILE_SIZE*2, false);
         // Vertical column
-        addItemAtSpot(8, 0, log, TILE_SIZE*2, TILE_SIZE*2, false);
+//        addItemAtSpot(8, 0, log, TILE_SIZE*2, TILE_SIZE*2, false);
         addItemAtSpot(8, 4, blueFlowers, TILE_SIZE, TILE_SIZE, true);
         addItemAtSpot(9, 4, daisies, TILE_SIZE, TILE_SIZE, true);
         // Top-right stack
@@ -292,7 +292,9 @@ public class GameWorld extends JPanel implements Runnable {
                 if (bulletBounds.intersects(targetBounds)) {
                     bullet.setActive(false);
                     bulletsToRemove.add(bullet);
-                    zombieTarget.onHit();
+                    if (!zombieTarget.isShieldActive()) {
+                        zombieTarget.onHit();
+                    }
                     if (zombieTarget.getHealth() <= 0) {
                         if (zombieTarget.getLives() > 1) {
                             zombieTarget.deductALife();

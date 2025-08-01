@@ -29,12 +29,10 @@ public class Zombie {
 
     private boolean isHit = false;
     private long hitTime = 0;
-    private static final int HIT_FLASH_DURATION_MS = 200;
 
     private int health = GameConstants.MAX_HEALTH; // 100
-    private int lives = 3;
+    private int lives = GameConstants.LIVES;
 
-    private static final long BOOST_DURATION = 5000; // 5 seconds
     private boolean shielded = false;
     private double speedMultiplier = 1.0;
     private long boostTimer = 0;
@@ -141,7 +139,7 @@ public class Zombie {
         AffineTransform at = new AffineTransform();
         at.translate(this.x, this.y);
         at.rotate(Math.toRadians(this.angle), this.img.getWidth() / 2.0, this.img.getHeight() / 2.0);
-        if (isHit && (System.currentTimeMillis() - hitTime < HIT_FLASH_DURATION_MS)) {
+        if (isHit && (System.currentTimeMillis() - hitTime < GameConstants.HIT_FLASH_DURATION_MS)) {
             // Glow red if hit
             System.out.println("Render red-tinted zombie");
             BufferedImage tinted = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_ARGB);
@@ -169,10 +167,12 @@ public class Zombie {
         // Lives count above zombie head
         g.setColor(Color.WHITE);
         g.setFont(new Font("Arial", Font.PLAIN, 14));
-        g.drawString("Lives: " + lives, x, y - 25);
-
+        g.drawString("Lives: " + lives, x, y - 15);
+        if (this.speedMultiplier > 1.0) {
+            g.drawString("SPEED ON", x, y - 35);
+        }
         // Show shield while active
-        if (this.shielded && System.currentTimeMillis() - boostTimer <= GameConstants.FIVE_SECONDS) {
+        if (isShieldActive()) {
             g.setColor(new Color(0, 255, 255, 255));
             g.drawOval((int)x - 8, (int)y - 8, img.getWidth() + 16, img.getHeight() + 16);
         }
@@ -215,7 +215,7 @@ public class Zombie {
     // trigger red flash and play hit sound
     public void onHit() {
         ResourceManager.getInstance().playSound("zombie_hit.wav");
-        if (this.shielded && System.currentTimeMillis() - boostTimer <= GameConstants.FIVE_SECONDS) {
+        if (this.isShieldActive()) {
             return; // shield still active
         }
         this.health -= 5; // else damage the zombie
@@ -223,14 +223,20 @@ public class Zombie {
 
     public void heal(int healAmount) {
         ResourceManager.getInstance().playSound("zombies-eating.wav");
+        try {
+            Thread.sleep(150); // wait 150 milliseconds
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
         ResourceManager.getInstance().playSound("healing_pickup.wav");
         this.health = Math.min(100, health + healAmount);
     }
 
     public void setSpeedBoost(double multiplier) {
         ResourceManager.getInstance().playSound("speed_powering_up.wav");
-        System.out.println("Zombie speed at triple " + this.speedMultiplier);
+        System.out.println("Zombie speed at " + multiplier + "x");
         this.speedMultiplier = multiplier;
+        this.boostTimer = System.currentTimeMillis(); // Set timer at same time
     }
 
     public void setBoostTimer(long boostTimer) {
@@ -241,10 +247,11 @@ public class Zombie {
         ResourceManager.getInstance().playSound("shield_item_pick_up_ding.wav");
         System.out.println("Zombie shielded " + isShielded);
         this.shielded = isShielded;
+        this.boostTimer = System.currentTimeMillis(); // Reset boost/shield timer together
     }
 
     private void resetPowerUps() {
-        if (System.currentTimeMillis() - boostTimer > BOOST_DURATION) {
+        if (System.currentTimeMillis() - boostTimer > GameConstants.BOOST_DURATION) {
             speedMultiplier = 1.0;
             shielded = false;
         }
@@ -261,5 +268,9 @@ public class Zombie {
     public void deductALife() {
         lives--;
         this.health = GameConstants.MAX_HEALTH; // reset health
+    }
+
+    public boolean isShieldActive() {
+        return this.shielded && (System.currentTimeMillis() - boostTimer <= GameConstants.BOOST_DURATION);
     }
 }

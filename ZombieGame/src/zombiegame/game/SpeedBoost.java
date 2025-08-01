@@ -9,7 +9,7 @@ public class SpeedBoost extends PowerUp {
 
     @Override
     public void applyTo(Zombie zombie) {
-        zombie.setSpeedBoost(4); // triple speeed
+        zombie.setSpeedBoost(3.0); // triple speeed
         zombie.setBoostTimer(System.currentTimeMillis());
     }
 }
