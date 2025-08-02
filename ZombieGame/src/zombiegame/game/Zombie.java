@@ -161,7 +161,8 @@ public class Zombie extends GameObject {
         }
     }
 
-    public void drawImage(Graphics2D g) {
+    @Override
+    public void draw(Graphics2D g) {
         if (exploding) {
             long elapsed = System.currentTimeMillis() - explosionStartTime;
             if (explosionFrame < ResourceFactory.explosionFrames.length && elapsed >= explosionFrame * EXPLOSION_FRAME_INTERVAL) {

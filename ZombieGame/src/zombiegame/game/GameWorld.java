@@ -44,6 +44,7 @@ public class GameWorld extends JPanel implements Runnable {
                     checkPowerUpPickup(zombie1);
                     checkPowerUpPickup(zombie2);
                     removeExpiredPowerUps();
+                    updatePowerUps();
                     checkGameOver();
                 }
                 this.repaint();   // redraw game
@@ -58,18 +59,38 @@ public class GameWorld extends JPanel implements Runnable {
         }
     }
 
+    private void updatePowerUps() {
+        synchronized (powerUps) {
+            for (PowerUp powerUp : powerUps) {
+                powerUp.update(); // grows, shrinks
+            }
+        }
+    }
+
     private void checkGameOver() {
         int zombie1Lives = zombie1.getLives();
         int zombie2Lives = zombie2.getLives();
         if (zombie1Lives <= 0 || zombie2Lives <= 0) {
             gameOver = true;
+            ResourceManager.getInstance().stopAllSounds();
+            ResourceManager.getInstance().playLoopedSound("Plants vs. Zombies - Moongrains.wav");
             this.winnerText = zombie1Lives > zombie2Lives ? "Green zombie has won!" : "Red zombie has won!";
         }
     }
 
     private void removeExpiredPowerUps() {
+        List<PowerUp> toRemove = new ArrayList<>();
         synchronized (powerUps) {
-            powerUps.removeIf(powerUp -> System.currentTimeMillis() - powerUp.getSpawnTime() > GameConstants.POWERUP_DURATION);
+            for (PowerUp powerUp : powerUps) {
+                long age = System.currentTimeMillis() - powerUp.getSpawnTime();
+                if (age > GameConstants.POWERUP_DURATION && !powerUp.isDisappearing()) {
+                    powerUp.startDisappearingAnimation();
+                }
+                if (powerUp.isFullyDisappeared()) {
+                    toRemove.add(powerUp);
+                }
+            }
+            powerUps.removeAll(toRemove);
         }
     }
 
@@ -95,6 +116,7 @@ public class GameWorld extends JPanel implements Runnable {
         powerUp.setSpawnTime(System.currentTimeMillis());
         this.powerUps.add(powerUp);
         this.lastPowerUpSpawnTime = System.currentTimeMillis();
+        powerUp.startAppearingAnimation();
     }
 
     private void checkPowerUpPickup(Zombie zombie) {
@@ -222,8 +244,8 @@ public class GameWorld extends JPanel implements Runnable {
         for (Wall wall : walls) {
             wall.draw(buffer);
         }
-        zombie1.drawImage(buffer);
-        zombie2.drawImage(buffer);
+        zombie1.draw(buffer);
+        zombie2.draw(buffer);
         for (Bullet b : zombie1.getBullets()) b.draw(buffer);
         for (Bullet b : zombie2.getBullets()) b.draw(buffer);
         synchronized (powerUps) {
@@ -302,11 +324,6 @@ public class GameWorld extends JPanel implements Runnable {
                         zombieTarget.onHit();
                         if (zombieTarget.getHealth() <= 0 && zombieTarget.getLives() >= 1) {
                             zombieTarget.deductALife();
-                        }
-                        if (zombieTarget.getLives() <= 0) {
-                            gameOver = true;
-                            ResourceManager.getInstance().stopAllSounds();
-                            ResourceManager.getInstance().playLoopedSound("Plants vs. Zombies - Moongrains.wav");
                         }
                     }
                 }

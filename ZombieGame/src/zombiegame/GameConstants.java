@@ -26,4 +26,5 @@ public class GameConstants {
     public static final int POWERUP_SPAWN_COOLDOWN = 10000;
     public static final int LIVES = 3;
     public static final int HIT_FLASH_DURATION_MS = 200;
+    public static final long ANIMATION_DURATION = 300;
 }

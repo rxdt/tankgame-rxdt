@@ -1,26 +1,43 @@
 package zombiegame.game;
 
+import zombiegame.GameConstants;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public abstract class PowerUp extends GameObject {
     protected BufferedImage img;
-    protected Rectangle bounds;
     private long spawnTime;
+    private double scale = 0.0; // current scale, 0 to 1
+    private boolean growing = true;
+    private boolean disappearing = false;
+    private boolean fullyDisappeared = false;
+    private long animationStartTime;
 
     public PowerUp(int x, int y, BufferedImage img) {
         this.x = x;
         this.y = y;
         this.img = img;
-        this.bounds = new Rectangle(x, y, img.getWidth(), img.getHeight());
     }
 
+    @Override
     public Rectangle getBounds() {
-        return bounds;
+        int width = (int)(img.getWidth() * scale);
+        int height = (int)(img.getHeight() * scale);
+        int drawX = x + (img.getWidth() - width) / 2;
+        int drawY = y + (img.getHeight() - height) / 2;
+        return new Rectangle(drawX, drawY, width, height);
     }
 
+    @Override
     public void draw(Graphics2D g) {
-        g.drawImage(img, x, y, null);
+        int width = (int)(img.getWidth() * scale);
+        int height = (int)(img.getHeight() * scale);
+        int drawX = x + (img.getWidth() - width) / 2;
+        int drawY = y + (img.getHeight() - height) / 2;
+        if (scale > 0.01) {
+            g.drawImage(img, drawX, drawY, width, height, null);
+        }
     }
 
     public abstract void applyTo(Zombie zombie);
@@ -31,5 +48,44 @@ public abstract class PowerUp extends GameObject {
 
     public long getSpawnTime() {
         return spawnTime;
+    }
+
+    public void startAppearingAnimation() {
+        this.animationStartTime = System.currentTimeMillis();
+        this.scale = 0.0;
+        this.growing = true;
+        this.disappearing = false;
+    }
+
+    public void startDisappearingAnimation() {
+        this.animationStartTime = System.currentTimeMillis();
+        this.growing = false;
+        this.disappearing = true;
+    }
+
+    public boolean isDisappearing() {
+        return disappearing;
+    }
+
+    public boolean isFullyDisappeared() {
+        return fullyDisappeared;
+    }
+
+    public void update() {
+        long elapsed = System.currentTimeMillis() - this.animationStartTime;
+        double progress = Math.min(1.0, (double) elapsed / GameConstants.ANIMATION_DURATION);
+        if (growing) {
+            scale = progress;
+            if (progress >= 1.0) {
+                growing = false;
+            }
+        } else if (disappearing) {
+            scale = 1.0 - progress;
+            if (progress >= 1.0) {
+                scale = 0.0; // ensure it's fully gone
+                disappearing = false;
+                fullyDisappeared = true;
+            }
+        }
     }
 }
