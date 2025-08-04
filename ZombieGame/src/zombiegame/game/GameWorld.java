@@ -9,6 +9,7 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -295,16 +296,14 @@ public class GameWorld extends JPanel implements Runnable {
 
     // handles bullet movement, deteects wall collisipn, removes bullets that hit walls
     private void updateBullets(Zombie shooter, Zombie zombieTarget) {
-        List<Bullet> bulletsToRemove = new ArrayList<>();
-        List<Bullet> bulletsToRemoveCopy = new ArrayList<>(shooter.getBullets());
-        for (Bullet bullet : bulletsToRemoveCopy) {
+        List<Bullet> bullets = Collections.synchronizedList(shooter.getBullets());
+        for (Bullet bullet : bullets) {
             bullet.update();
             Rectangle bulletBounds = bullet.getBounds();
             // 1. Check wall collisions
             for (Wall wall : walls) {
                 if (bulletBounds.intersects(wall.getBounds())) {
                     bullet.setActive(false);
-                    bulletsToRemove.add(bullet);
                     if (wall instanceof BreakableWall breakable) {
                          breakable.destroy();
                     }
@@ -319,9 +318,7 @@ public class GameWorld extends JPanel implements Runnable {
                 );
                 if (bulletBounds.intersects(targetBounds)) {
                     bullet.setActive(false);
-                    bulletsToRemove.add(bullet);
                     if (!zombieTarget.isShieldActive()) {
-                        Boolean isDead = zombieTarget.onHit();
                         if (zombieTarget.getHealth() <= 0 && zombieTarget.getLives() >= 1) {
                             zombieTarget.deductALife();
                         }
@@ -329,6 +326,6 @@ public class GameWorld extends JPanel implements Runnable {
                 }
             }
         }
-        shooter.getBullets().removeAll(bulletsToRemove);
+        bullets.removeIf(b -> !b.isActive());
     }
 }
