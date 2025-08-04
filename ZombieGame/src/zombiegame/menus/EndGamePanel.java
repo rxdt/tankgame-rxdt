@@ -9,7 +9,7 @@ import java.awt.image.BufferedImage;
 
 public class EndGamePanel extends JPanel {
 
-    private BufferedImage menuBackground;
+    private String winnerText = "Game Over"; // default
     private final Launcher launcher;
 
     public EndGamePanel(Launcher launcher) {
@@ -40,11 +40,11 @@ public class EndGamePanel extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g); // clears the background
         Graphics2D g2 = (Graphics2D) g;
-        g2.drawImage(this.menuBackground, 0, 0, this.getWidth(), this.getHeight(), null);
+        g2.drawImage(null, 0, 0, this.getWidth(), this.getHeight(), null);
         g.setFont(new Font("Comic Sans MS", Font.BOLD, 60));
         g.setColor(Color.CYAN);
         FontMetrics fm = g.getFontMetrics();
-        int textWidth = fm.stringWidth("Game Over");
-        g.drawString("Game Over", (getWidth() - textWidth) / 2, 200);
+        int textWidth = fm.stringWidth(this.winnerText);
+        g.drawString(this.winnerText, (getWidth() - textWidth) / 2, 200);
     }
 }

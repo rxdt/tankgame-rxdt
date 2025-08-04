@@ -76,6 +76,9 @@ public class GameWorld extends JPanel implements Runnable {
             ResourceManager.getInstance().stopAllSounds();
             ResourceManager.getInstance().playLoopedSound("Plants vs. Zombies - Moongrains.wav");
             this.winnerText = zombie1Lives > zombie2Lives ? "Green zombie has won!" : "Red zombie has won!";
+            Timer timer = new Timer(3000, e -> launcher.setFrame("end"));
+            timer.setRepeats(false);
+            timer.start();
         }
     }
 
@@ -272,9 +275,6 @@ public class GameWorld extends JPanel implements Runnable {
             FontMetrics fm = g2.getFontMetrics();
             int textWidth = fm.stringWidth(winnerText);
             g2.drawString(winnerText, (GameConstants.GAME_SCREEN_WIDTH - textWidth) / 2, GameConstants.GAME_SCREEN_HEIGHT / 2);
-            Timer timer = new Timer(3000, e -> launcher.setFrame("end"));
-            timer.setRepeats(false);
-            timer.start();
         }
     }
 

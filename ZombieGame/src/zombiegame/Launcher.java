@@ -26,6 +26,7 @@ public class Launcher {
      * called the event dispatch thread.
      */
     private GameWorld gamePanel;
+    private EndGamePanel endGamePanel;
     /*
      * JFrame used to store our main panel. We will also attach all event
      * listeners to this JFrame.
@@ -100,6 +101,10 @@ public class Launcher {
 
     public GameWorld getGamePanel() {
         return this.gamePanel;
+    }
+
+    public EndGamePanel getEndGamePanel() {
+        return this.endGamePanel;
     }
 
     /**
