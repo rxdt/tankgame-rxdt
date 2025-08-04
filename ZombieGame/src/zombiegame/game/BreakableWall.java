@@ -13,7 +13,7 @@ public class BreakableWall extends Wall {
     @Override
     public void draw(Graphics2D g) {
         if (!destroyed) {
-            g.drawImage(getImage(), getX(), getY(), null);
+            g.drawImage(getImage(), (int)getX(), (int)getY(), null);
         }
     }
 

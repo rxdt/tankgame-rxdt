@@ -5,22 +5,18 @@ import java.awt.image.BufferedImage;
 
 public class Wall extends GameObject {
 
-    private BufferedImage img;
-
     public Wall(int x, int y, int width, int height, BufferedImage img) {
-        this.x = x;
-        this.y = y;
+        super(x, y, 0, 0, 0, img);
         this.width = width;
         this.height = height;
-        this.img = img;
     }
 
     public Rectangle getBounds() {
-        return new Rectangle(x, y, width, height);
+        return new Rectangle((int)x, (int)y, width, height);
     }
 
     public void draw(Graphics2D g) {
-        g.drawImage(img, x, y, width, height, null);
+        g.drawImage(img, (int)x, (int)y, width, height, null);
     }
 
     protected BufferedImage getImage() {

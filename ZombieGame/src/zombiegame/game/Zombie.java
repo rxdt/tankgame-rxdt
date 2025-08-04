@@ -11,19 +11,16 @@ import java.util.EnumSet;
 import java.util.List;
 
 public class Zombie extends GameObject {
+    private int ID;
     public enum Direction {UP, DOWN, LEFT, RIGHT, SHOOT}
     private final EnumSet<Direction> keysPressed = EnumSet.noneOf(Direction.class);
 
-    private float x;
-    private float y;
     private float vx; // useful for simple approach to collisions, velocity x distance traveled over time
     private float vy; // useful for simple approach to collisions, velocity y
 
-    private float angle; // direction zombie is facing - make sure all assets facing same way
     private float R = 5; // speed
     private float ROTATIONSPEED = 3.0f;
 
-    private BufferedImage img; // don't want it static atm because need two zombies that look different
     private BufferedImage bulletImg;
     private List<Bullet> bullets = new ArrayList<>();
     private float facingOffset = 0f;
@@ -36,22 +33,19 @@ public class Zombie extends GameObject {
 
     private boolean shielded = false;
     private double speedMultiplier = 1.0;
-    private long boostTimer = 0;
+    private long boostTimer;
 
     private boolean exploding = false;
     private int explosionFrame = 0;
     private static final int MAX_EXPLOSION_FRAMES = ResourceFactory.explosionFrames.length;
-    private static final int EXPLOSION_FRAME_INTERVAL = 100;
-    private static final int RESPAWN_DELAY = 2000;
+    private static final int EXPLOSION_FRAME_INTERVAL = 300;
+    private static final int RESPAWN_DELAY = 3000;
     private long explosionStartTime = 0;
 
-    Zombie(float x, float y, float vx, float vy, float angle, BufferedImage img) {
-        this.x = x;
-        this.y = y;
-        this.vx = vx;
-        this.vy = vy;
-        this.img = img;
-        this.angle = angle;
+    Zombie(float x, float y, float vx, float vy, float angle, BufferedImage img, int ID) {
+        super(x, y, vx, vy, angle, img);
+        this.ID = ID;
+        this.boostTimer = System.currentTimeMillis();
     }
 
     @Override
@@ -85,7 +79,6 @@ public class Zombie extends GameObject {
             }
             return;
         }
-        resetPowerUps();
         float originalX = x;
         float originalY = y;
         if (this.keysPressed.contains(Direction.UP)) {
@@ -111,12 +104,13 @@ public class Zombie extends GameObject {
         }
         // Check for zombie-zombie collision
         if (otherZombie != null) {
-            Rectangle otherBounds = new Rectangle(otherZombie.getX(), otherZombie.getY(), otherZombie.img.getWidth(), otherZombie.img.getHeight());
+            Rectangle otherBounds = new Rectangle((int)otherZombie.getX(), (int)otherZombie.getY(), otherZombie.img.getWidth(), otherZombie.img.getHeight());
             if (nextBounds.intersects(otherBounds)) {
                 x = originalX;
                 y = originalY;
             }
         }
+        resetPowerUps();
     }
 
     private void rotateLeft() {
@@ -214,14 +208,6 @@ public class Zombie extends GameObject {
         }
     }
 
-    public int getX() {
-        return (int) this.x;
-    }
-
-    public int getY() {
-        return (int) this.y;
-    }
-
     public void setBulletImage(BufferedImage bulletImg) {
         this.bulletImg = bulletImg;
     }
@@ -274,8 +260,8 @@ public class Zombie extends GameObject {
         this.boostTimer = System.currentTimeMillis(); // Set timer at same time
     }
 
-    public void setBoostTimer(long boostTimer) {
-        this.boostTimer = boostTimer;
+    public void setBoostTimer() {
+        this.boostTimer = System.currentTimeMillis();
     }
 
     public void setShield(boolean isShielded) {
@@ -286,11 +272,18 @@ public class Zombie extends GameObject {
     }
 
     private void resetPowerUps() {
-        if (System.currentTimeMillis() - boostTimer > GameConstants.POWERUP_DURATION) {
-            speedMultiplier = 1.0;
-            shielded = false;
+        long timeElapsed = System.currentTimeMillis() - boostTimer;
+        if (boostTimer == 0) {
+            this.speedMultiplier = 1.0;
+            this.shielded = false;
+            return;
+        }
+        if (timeElapsed > GameConstants.POWERUP_DURATION) {
+            this.speedMultiplier = 1.0;
+            this.shielded = false;
         }
     }
+
 
     public int getHealth() {
         return health;

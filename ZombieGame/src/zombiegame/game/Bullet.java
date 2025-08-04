@@ -5,17 +5,11 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
 public class Bullet extends GameObject {
-    private float x, y;
-    private float angle;
     private float speed = 10f;
-    private BufferedImage img;
     private boolean active = true;
 
     public Bullet(float x, float y, float angle, BufferedImage img) {
-        this.x = x;
-        this.y = y;
-        this.angle = angle;
-        this.img = img;
+        super(x, y, 0, 0, angle, img);
     }
 
     public void update() {

@@ -123,7 +123,7 @@ public class GameWorld extends JPanel implements Runnable {
         List<PowerUp> toRemove = new ArrayList<>();
         synchronized (powerUps) {
             for (PowerUp powerUp : powerUps) {
-                if (powerUp.getBounds().intersects(new Rectangle(zombie.getX(), zombie.getY(), zombie.getImage().getWidth(), zombie.getImage().getHeight()))) {
+                if (powerUp.getBounds().intersects(new Rectangle((int)zombie.getX(), (int)zombie.getY(), zombie.getImage().getWidth(), zombie.getImage().getHeight()))) {
                     powerUp.applyTo(zombie);
                     toRemove.add(powerUp);
                 }
@@ -164,8 +164,8 @@ public class GameWorld extends JPanel implements Runnable {
             System.err.println("Error: could not load png");
             System.exit(-3);
         }
-        zombie1 = new Zombie(300, 350, 0, 0, (short) 0, z1img);
-        zombie2 = new Zombie(600, 350, 0, 0, (short) 0, z2img);
+        zombie1 = new Zombie(300, 350, 0, 0, (short) 0, z1img, 1); // green zombie
+        zombie2 = new Zombie(600, 350, 0, 0, (short) 0, z2img, 2); // red zombie
         zombie2.setFacingOffset(180);
         zombie1.setBulletImage(bulletImg);
         zombie2.setBulletImage(bulletImg);
@@ -277,13 +277,13 @@ public class GameWorld extends JPanel implements Runnable {
         }
     }
 
-    private BufferedImage getViewport(int centerX, int centerY, int width, int height) {
-        int x = centerX - width / 2;
-        int y = centerY - height / 2;
+    private BufferedImage getViewport(float centerX, float centerY, int width, int height) {
+        float x = centerX - width / 2;
+        float y = centerY - height / 2;
         // Clamp to map boundaries
         x = Math.max(0, Math.min(x, world.getWidth() - width));
         y = Math.max(0, Math.min(y, world.getHeight() - height));
-        return world.getSubimage(x, y, width, height);
+        return world.getSubimage((int)x, (int)y, width, height);
     }
 
     @Override
@@ -314,7 +314,7 @@ public class GameWorld extends JPanel implements Runnable {
             // 2. Check if bullet hits the other zombie
             if (bullet.isActive()) {
                 Rectangle targetBounds = new Rectangle(
-                        zombieTarget.getX(), zombieTarget.getY(),
+                        (int)zombieTarget.getX(), (int)zombieTarget.getY(),
                         zombieTarget.getImage().getWidth(), zombieTarget.getImage().getHeight()
                 );
                 if (bulletBounds.intersects(targetBounds)) {

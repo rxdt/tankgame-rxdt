@@ -6,7 +6,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public abstract class PowerUp extends GameObject {
-    protected BufferedImage img;
     private long spawnTime;
     private double scale = 0.0; // current scale, 0 to 1
     private boolean growing = true;
@@ -15,28 +14,26 @@ public abstract class PowerUp extends GameObject {
     private long animationStartTime;
 
     public PowerUp(int x, int y, BufferedImage img) {
-        this.x = x;
-        this.y = y;
-        this.img = img;
+        super(x, y, 0, 0, 0, img);
     }
 
     @Override
     public Rectangle getBounds() {
         int width = (int)(img.getWidth() * scale);
         int height = (int)(img.getHeight() * scale);
-        int drawX = x + (img.getWidth() - width) / 2;
-        int drawY = y + (img.getHeight() - height) / 2;
-        return new Rectangle(drawX, drawY, width, height);
+        float drawX = x + (img.getWidth() - width) / 2;
+        float drawY = y + (img.getHeight() - height) / 2;
+        return new Rectangle((int)drawX, (int)drawY, width, height);
     }
 
     @Override
     public void draw(Graphics2D g) {
         int width = (int)(img.getWidth() * scale);
         int height = (int)(img.getHeight() * scale);
-        int drawX = x + (img.getWidth() - width) / 2;
-        int drawY = y + (img.getHeight() - height) / 2;
+        float drawX = x + (img.getWidth() - width) / 2;
+        float drawY = y + (img.getHeight() - height) / 2;
         if (scale > 0.01) {
-            g.drawImage(img, drawX, drawY, width, height, null);
+            g.drawImage(img, (int)drawX, (int)drawY, width, height, null);
         }
     }
 
