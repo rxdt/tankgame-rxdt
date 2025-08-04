@@ -70,7 +70,8 @@ public class GameWorld extends JPanel implements Runnable {
     private void checkGameOver() {
         int zombie1Lives = zombie1.getLives();
         int zombie2Lives = zombie2.getLives();
-        if (zombie1Lives <= 0 || zombie2Lives <= 0) {
+        if ((zombie1Lives <= 0 && zombie1.getHealth() <= 0) ||
+                (zombie2Lives <= 0 && zombie2.getHealth() <= 0)) {
             gameOver = true;
             ResourceManager.getInstance().stopAllSounds();
             ResourceManager.getInstance().playLoopedSound("Plants vs. Zombies - Moongrains.wav");
@@ -320,7 +321,7 @@ public class GameWorld extends JPanel implements Runnable {
                     bullet.setActive(false);
                     bulletsToRemove.add(bullet);
                     if (!zombieTarget.isShieldActive()) {
-                        zombieTarget.onHit();
+                        Boolean isDead = zombieTarget.onHit();
                         if (zombieTarget.getHealth() <= 0 && zombieTarget.getLives() >= 1) {
                             zombieTarget.deductALife();
                         }

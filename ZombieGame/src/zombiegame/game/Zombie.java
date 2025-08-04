@@ -234,11 +234,12 @@ public class Zombie extends GameObject {
     }
 
     // trigger red flash and play hit sound, explodw if life lost
-    public void onHit() {
+    public Boolean onHit() {
         ResourceManager.getInstance().playSound("zombie_hit.wav");
         this.health -= 5;
         this.isHit = true;
         this.hitTime = System.currentTimeMillis();
+        return this.health <= 0 && this.lives <= 0;
     }
 
     public void heal(int healAmount) {
@@ -292,11 +293,13 @@ public class Zombie extends GameObject {
     }
 
     public void deductALife() {
-        lives--;
-        // trigger explosion
-        exploding = true;
-        explosionFrame = 0;
-        explosionStartTime = System.currentTimeMillis(); // ← starts explosion timer
+        if (!exploding) {
+            lives--;
+            // trigger explosion
+            exploding = true;
+            explosionFrame = 0;
+            explosionStartTime = System.currentTimeMillis(); // ← starts explosion timer
+        }
     }
 
     public boolean isShieldActive() {
