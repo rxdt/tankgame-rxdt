@@ -1,5 +1,7 @@
 package zombiegame.game;
 
+import zombiegame.GameConstants;
+
 import java.awt.image.BufferedImage;
 
 public class SpeedBoost extends PowerUp {
@@ -9,7 +11,7 @@ public class SpeedBoost extends PowerUp {
 
     @Override
     public void applyTo(Zombie zombie) {
-        zombie.setSpeedBoost(10.0); // triple speeed
+        zombie.setSpeedBoost(GameConstants.SPEED_BOOST); // triple speeed
         zombie.setBoostTimer();
     }
 }

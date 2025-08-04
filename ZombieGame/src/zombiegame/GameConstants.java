@@ -27,4 +27,5 @@ public class GameConstants {
     public static final int LIVES = 3;
     public static final int HIT_FLASH_DURATION_MS = 200;
     public static final long ANIMATION_DURATION = 300;
+    public static final double SPEED_BOOST = 5.0;
 }

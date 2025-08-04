@@ -11,7 +11,6 @@ import java.util.EnumSet;
 import java.util.List;
 
 public class Zombie extends GameObject {
-    private int ID;
     public enum Direction {UP, DOWN, LEFT, RIGHT, SHOOT}
     private final EnumSet<Direction> keysPressed = EnumSet.noneOf(Direction.class);
 
@@ -42,9 +41,8 @@ public class Zombie extends GameObject {
     private static final int RESPAWN_DELAY = 3000;
     private long explosionStartTime = 0;
 
-    Zombie(float x, float y, float vx, float vy, float angle, BufferedImage img, int ID) {
+    Zombie(float x, float y, float vx, float vy, float angle, BufferedImage img) {
         super(x, y, vx, vy, angle, img);
-        this.ID = ID;
         this.boostTimer = System.currentTimeMillis();
     }
 
@@ -122,11 +120,11 @@ public class Zombie extends GameObject {
     }
 
     private void moveBackwards() {
-        vx =  Math.round(R * Math.cos(Math.toRadians(angle)));
-        vy =  Math.round(R * Math.sin(Math.toRadians(angle)));
+        vx =  Math.round((float)(R * speedMultiplier * Math.cos(Math.toRadians(angle))));
+        vy =  Math.round((float)(R * speedMultiplier * Math.sin(Math.toRadians(angle))));
         x -= vx;
         y -= vy;
-       checkBorder();
+        checkBorder();
     }
 
     private void moveForwards() {
@@ -224,6 +222,7 @@ public class Zombie extends GameObject {
         float bulletY = y + img.getHeight() / 2f - bulletImg.getHeight() / 2f +
                 (float)(spawnDistance * Math.sin(Math.toRadians(bulletAngle)));
         bullets.add(new Bullet(bulletX, bulletY, bulletAngle, bulletImg));
+        ResourceManager.getInstance().playSound("bullet-shot.wav");
     }
 
     public void setFacingOffset(float offset) {
@@ -283,7 +282,6 @@ public class Zombie extends GameObject {
             this.shielded = false;
         }
     }
-
 
     public int getHealth() {
         return health;
