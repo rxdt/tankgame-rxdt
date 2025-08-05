@@ -36,7 +36,7 @@ public class EndGamePanel extends JPanel {
         exitButton.setMaximumSize(new Dimension(300, 60));
         exitButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         exitButton.addActionListener(actionEvent -> this.launcher.closeGame());
-        
+
         this.add(Box.createVerticalGlue());
         this.add(restartButton);
         this.add(Box.createRigidArea(new Dimension(0, 30)));
