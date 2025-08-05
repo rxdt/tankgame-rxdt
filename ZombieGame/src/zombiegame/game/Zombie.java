@@ -9,7 +9,6 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Zombie extends GameObject {
     public enum Direction {UP, DOWN, LEFT, RIGHT, SHOOT}
@@ -38,8 +37,8 @@ public class Zombie extends GameObject {
     private boolean exploding = false;
     private int explosionFrame = 0;
     private static final int MAX_EXPLOSION_FRAMES = ResourceFactory.explosionFrames.length;
-    private static final int EXPLOSION_FRAME_INTERVAL = 300;
-    private static final int RESPAWN_DELAY = 3000;
+    private static final int EXPLOSION_FRAME_INTERVAL = 200;
+    private static final int RESPAWN_DELAY = 2500;
     private long explosionStartTime = 0;
 
     Zombie(float x, float y, float vx, float vy, float angle, BufferedImage img) {
@@ -70,8 +69,25 @@ public class Zombie extends GameObject {
             // Wait before respawn
             if (explosionFrame >= MAX_EXPLOSION_FRAMES && elapsed >= MAX_EXPLOSION_FRAMES * EXPLOSION_FRAME_INTERVAL + RESPAWN_DELAY) {
                 if (lives > 0) {
-                    x = 50 + (float)(Math.random() * (GameConstants.GAME_SCREEN_WIDTH - 100));
-                    y = 50 + (float)(Math.random() * (GameConstants.GAME_SCREEN_HEIGHT - 100));
+                    boolean validLocation = false;
+                    int zombieWidth = img.getWidth();
+                    int zombieHeight = img.getHeight();
+                    while (!validLocation) {
+                        float newX = 50 + (float) (Math.random() * (GameConstants.GAME_SCREEN_WIDTH - 100));
+                        float newY = 50 + (float) (Math.random() * (GameConstants.GAME_SCREEN_HEIGHT - 100));
+                        Rectangle newBounds = new Rectangle((int)newX, (int)newY, zombieWidth, zombieHeight);
+                        validLocation = true;
+                        for  (Wall wall : walls) {
+                            if (newBounds.intersects(wall.getBounds())) {
+                                validLocation = false;
+                                break;
+                            }
+                        }
+                        if (validLocation) {
+                            this.x = newX;
+                            this.y = newY;
+                        }
+                    }
                     health = GameConstants.MAX_HEALTH;
                     exploding = false;
                     explosionFrame = 0;
@@ -239,7 +255,6 @@ public class Zombie extends GameObject {
     public void onHit() {
         ResourceManager.getInstance().playSound("zombie_hit.wav");
         this.health -= 5;
-        System.out.println("zombie.onHit() health now:  " + health);
         this.isHit = true;
         this.hitTime = System.currentTimeMillis();
     }

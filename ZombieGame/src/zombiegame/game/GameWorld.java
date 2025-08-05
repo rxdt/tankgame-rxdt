@@ -74,7 +74,7 @@ public class GameWorld extends JPanel implements Runnable {
         int zombie2Lives = zombie2.getLives();
         if ((zombie1Lives <= 0 && zombie1.getHealth() <= 0) ||
                 (zombie2Lives <= 0 && zombie2.getHealth() <= 0)) {
-            gameOver = true;
+            this.gameOver = true;
             ResourceManager.getInstance().stopAllSounds();
             ResourceManager.getInstance().playLoopedSound("Plants vs. Zombies - Moongrains.wav");
             this.winnerText = zombie1Lives > zombie2Lives ? "Green zombie has won!" : "Red zombie has won!";
@@ -176,10 +176,10 @@ public class GameWorld extends JPanel implements Runnable {
         zombie1.setBulletImage(bulletImg);
         zombie2.setBulletImage(bulletImg);
         this.addKeyListener( //  listen to key events on the panel, not the jframe
-            new ZombieControl(zombie1, KeyEvent.VK_W, KeyEvent.VK_S, KeyEvent.VK_A, KeyEvent.VK_D, KeyEvent.VK_SPACE)
+            new ZombieControl(zombie1, KeyEvent.VK_W, KeyEvent.VK_S, KeyEvent.VK_A, KeyEvent.VK_D, KeyEvent.VK_SPACE, this)
         );
         this.addKeyListener(
-            new ZombieControl(zombie2, KeyEvent.VK_DOWN, KeyEvent.VK_UP, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_ENTER)
+            new ZombieControl(zombie2, KeyEvent.VK_DOWN, KeyEvent.VK_UP, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_ENTER, this)
         );
         try {
             loadMap();
@@ -193,12 +193,12 @@ public class GameWorld extends JPanel implements Runnable {
     public void loadMap() throws IOException {
         List<BufferedImage> breakable = new ArrayList<>();
         List<BufferedImage> nonBreakable = new ArrayList<>();
-        // breakable - flowers
+        // Non-breakable - flowers
         breakable.add(ResourceManager.getInstance().getImage("vfx/sunflower.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE));
         breakable.add(ResourceManager.getInstance().getImage("vfx/daisies.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE));
         breakable.add(ResourceManager.getInstance().getImage("vfx/blue_flowers.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE));
         breakable.add(ResourceManager.getInstance().getImage("vfx/roses.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE));
-        // non-breakable - non-flowers
+        // Breakable - non-flowers
         nonBreakable.add(ResourceManager.getInstance().getImage("vfx/bush.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE));
         nonBreakable.add(ResourceManager.getInstance().getImage("vfx/log.png", GameConstants.GENERIC_SIZE*2, GameConstants.GENERIC_SIZE*2));
         nonBreakable.add(ResourceManager.getInstance().getImage("vfx/trees.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE));
@@ -221,11 +221,11 @@ public class GameWorld extends JPanel implements Runnable {
                 int x = column * GameConstants.GENERIC_SIZE;
                 int y = row * GameConstants.GENERIC_SIZE;
                 switch (code) {
-                    case 1: // breakable flowers
+                    case 1: // Non-breakable flowers
                         this.walls.add(new Wall(x, y, GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE,
                                 breakable.get((int)(Math.random() * breakable.size()))));
                         break;
-                    case 2: // non-breakable
+                    case 2: // Breakable
                         this.walls.add(new BreakableWall(x, y, GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE,
                                 nonBreakable.get((int)(Math.random() * nonBreakable.size()))));
                         break;
@@ -296,38 +296,43 @@ public class GameWorld extends JPanel implements Runnable {
     }
 
     // handles bullet movement, deteects wall collisipn, removes bullets that hit walls
-    private void updateBullets(Zombie shooter, Zombie zombieTarget) {
-        List<Bullet> bulletSnapshot = new ArrayList<>(shooter.getBullets());
-        for (Bullet bullet : bulletSnapshot) {
+    private void updateBullets(Zombie shooter, Zombie target) {
+        List<Bullet> bullets = shooter.getBullets();
+        List<Bullet> bulletsCopy = new ArrayList<>(bullets);
+        Rectangle targetBounds = new Rectangle(
+                (int) target.getX(),
+                (int) target.getY(),
+                target.getImage().getWidth(),
+                target.getImage().getHeight()
+        );
+        for (Bullet bullet : bulletsCopy) {
             bullet.update();
             Rectangle bulletBounds = bullet.getBounds();
             // 1. Check wall collisions
             for (Wall wall : walls) {
                 if (bulletBounds.intersects(wall.getBounds())) {
                     bullet.setActive(false);
-                    if (wall instanceof BreakableWall breakable) {
-                         breakable.destroy();
+                    if (wall instanceof BreakableWall breakableWall) {
+                        breakableWall.destroy();
                     }
                     break;
                 }
             }
             // 2. Check if bullet hits the other zombie
-            if (bullet.isActive()) {
-                Rectangle targetBounds = new Rectangle(
-                        (int)zombieTarget.getX(), (int)zombieTarget.getY(),
-                        zombieTarget.getImage().getWidth(), zombieTarget.getImage().getHeight()
-                );
-                if (bulletBounds.intersects(targetBounds)) {
-                    bullet.setActive(false);
-                    if (!zombieTarget.isShieldActive()) {
-                        zombieTarget.onHit();
-                        if (zombieTarget.getHealth() <= 0 && zombieTarget.getLives() >= 1) {
-                            zombieTarget.deductALife();
-                        }
+            if (bullet.isActive() && bulletBounds.intersects(targetBounds)) {
+                bullet.setActive(false);
+                if (!target.isShieldActive()) {
+                    target.onHit();
+                    if (target.getHealth() <= 0 && target.getLives() >= 1) {
+                        target.deductALife();
                     }
                 }
             }
-            shooter.getBullets().removeIf(b -> !b.isActive());
         }
+        bullets.removeIf(b -> !b.isActive());
+    }
+
+    public boolean gameIsOver() {
+        return this.gameOver;
     }
 }

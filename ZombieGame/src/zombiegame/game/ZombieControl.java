@@ -11,23 +11,24 @@ public class ZombieControl implements KeyListener {
     private int right;
     private int left;
     private final int fireKey;
+    private final GameWorld gameWorld;
 
-    public ZombieControl(Zombie zombie, int up, int down, int left, int right, int fireKey) {
+    public ZombieControl(Zombie zombie, int up, int down, int left, int right, int fireKey, GameWorld gameWorld) {
         this.zombie = zombie;
         this.up = up;
         this.down = down;
         this.left = left;
         this.right = right;
         this.fireKey = fireKey;
+        this.gameWorld = gameWorld;
     }
 
     @Override
-    public void keyTyped(KeyEvent ke) {
-
-    }
+    public void keyTyped(KeyEvent ke) {}
 
     @Override
     public void keyPressed(KeyEvent ke) {
+        if (this.gameWorld.gameIsOver()) return;
         int keyPressed = ke.getKeyCode();
         if (keyPressed == up)
             this.zombie.pressed(Zombie.Direction.UP);
@@ -43,6 +44,7 @@ public class ZombieControl implements KeyListener {
 
     @Override
     public void keyReleased(KeyEvent ke) {
+        if (this.gameWorld.gameIsOver()) return;
         int keyReleased = ke.getKeyCode();
         if (keyReleased == up)
             this.zombie.released(Zombie.Direction.UP);
