@@ -1,21 +1,23 @@
 package zombiegame;
 
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 // don't go bigger than 1080p
 public class GameConstants {
     public static final int GENERIC_SIZE = 64;
     public static final int POWERUP_SIZE = 48;
-    public static final int GAME_SCREEN_WIDTH = 960;
-    public static final int GAME_SCREEN_HEIGHT = 600;
 
-    public static final int START_MENU_SCREEN_WIDTH = 500;
-    public static final int START_MENU_SCREEN_HEIGHT = 550;
+    private static final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    private static final int SCREEN_WIDTH = (int) screenSize.getWidth();
+    private static final int SCREEN_HEIGHT = (int) screenSize.getHeight();
 
-    public static final int END_MENU_SCREEN_WIDTH = 500;
-    public static final int END_MENU_SCREEN_HEIGHT = 500;
-    
+    public static final int FULLSCREEN_WIDTH = Math.min(SCREEN_WIDTH, 1920);
+    public static final int FULLSCREEN_HEIGHT = Math.min(SCREEN_HEIGHT, 1080);
+
+    public static final int GAME_SCREEN_WIDTH = FULLSCREEN_WIDTH;
+    public static final int GAME_SCREEN_HEIGHT = FULLSCREEN_HEIGHT;
+
     public static final Map<Object,Object> RENDER_HINTS =  new HashMap<>(){{
         put(RenderingHints.KEY_INTERPOLATION,RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);

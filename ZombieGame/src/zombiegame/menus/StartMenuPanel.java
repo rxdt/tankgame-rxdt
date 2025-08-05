@@ -17,7 +17,7 @@ public class StartMenuPanel extends JPanel {
     public StartMenuPanel(Launcher launcher) {
         this.launcher = launcher;
         ResourceManager.getInstance().playLoopedSound("plants-vs-zombies-halloween-spooky.wav");
-        menuBackground = ResourceManager.getInstance().getImage("vfx/title.png", GameConstants.START_MENU_SCREEN_WIDTH, GameConstants.START_MENU_SCREEN_HEIGHT);
+        menuBackground = ResourceManager.getInstance().getImage("vfx/title.png", GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT);
         if (menuBackground == null) {
             System.err.println("Error: cannot load menu background image (title.png)");
             System.exit(-3);

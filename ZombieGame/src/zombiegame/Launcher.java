@@ -26,11 +26,11 @@ public class Launcher {
      * called the event dispatch thread.
      */
     private GameWorld gamePanel;
-    private EndGamePanel endGamePanel;
     /*
      * JFrame used to store our main panel. We will also attach all event
      * listeners to this JFrame.
      */
+    private EndGamePanel endPanel;
     private final JFrame jf;
     /*
      * CardLayout is used to manage our sub-panels. This is a layout manager
@@ -55,18 +55,25 @@ public class Launcher {
         JPanel startPanel = new StartMenuPanel(this); // create a new start panel, hands launcher to subpanel so it can call setFrame
         this.gamePanel = new GameWorld(this); // create a new game panel
         this.gamePanel.InitializeGame(); // initialize game, but DO NOT start game
+        this.endPanel = new EndGamePanel(this);
         /*
          * end panel is used to show the end game panel. it will contain
          * two buttons restart and exit.
          */
-        JPanel endPanel = new EndGamePanel(this);
         cl = new CardLayout(); // creating a new CardLayout Panel, allows us to put panels on top of each other
         this.mainPanel.setLayout(cl); // set the layout of the main panel to our card layout
+
+        startPanel.setPreferredSize(new Dimension(GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT));
+        this.gamePanel.setPreferredSize(new Dimension(GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT));
+        this.endPanel.setPreferredSize(new Dimension(GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT));
+
         this.mainPanel.add(startPanel, "start"); // add the start panel to the main panel
         this.mainPanel.add(gamePanel, "game"); // add the game panel to the main panel
         this.mainPanel.add(endPanel, "end"); // add the end game panel to the main panel
+
         this.jf.add(mainPanel); // add the main panel to the JFrame
         this.jf.setResizable(false); // make the JFrame not resizable
+        this.jf.pack();
         this.setFrame("start"); // set the current panel to start panel
     }
 
@@ -79,7 +86,7 @@ public class Launcher {
         // these width/height resolutions will change to account for minimap
         switch (type) {
             case "start" -> {
-                this.jf.setSize(GameConstants.START_MENU_SCREEN_WIDTH, GameConstants.START_MENU_SCREEN_HEIGHT);
+                this.jf.setSize(GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT);
                 this.cl.show(mainPanel, type); // change current panel shown on main panel tp the panel denoted by type.
                 this.jf.setVisible(true); // show the JFrame
             }
@@ -91,7 +98,7 @@ public class Launcher {
                 (new Thread(this.gamePanel)).start();  // start game loop
             }
             case "end" -> {
-                this.jf.setSize(GameConstants.END_MENU_SCREEN_WIDTH, GameConstants.END_MENU_SCREEN_HEIGHT);
+                this.jf.setSize(GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT);
                 this.cl.show(mainPanel, type);
                 this.jf.setVisible(true);
             }
@@ -101,10 +108,6 @@ public class Launcher {
 
     public GameWorld getGamePanel() {
         return this.gamePanel;
-    }
-
-    public EndGamePanel getEndGamePanel() {
-        return this.endGamePanel;
     }
 
     /**
