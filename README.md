@@ -36,14 +36,13 @@ The jar folder will store the built jar of your term project.
 >  java -cp out zombiegame.Launcher
 ```
 
-## Controls to play your Game:
+## Controls to play Zombie Game:
 
 |               | Player 1 - Green | Player 2 - Red |
-|---------------|------------------|--------------|
-|  Forward      | W                | up arrow     |
-|  Backward     | S                | down arrow   |
-|  Rotate left  | A                | left arrow   |
-|  Rotate Right | D                | right arrow  |
-|  Shoot        | space            | enter        |
+|---------------|------------------|----------------|
+|  Forward      | W                | up arrow       |
+|  Backward     | S                | down arrow     |
+|  Rotate left  | A                | left arrow     |
+|  Rotate Right | D                | right arrow    |
+|  Shoot        | space            | enter          |
 
-<!-- You may add more controls if you need to. -->
