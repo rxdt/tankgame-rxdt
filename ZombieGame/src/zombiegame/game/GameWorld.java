@@ -102,7 +102,7 @@ public class GameWorld extends JPanel implements Runnable {
         int x = (int)(Math.random() * (GameConstants.GAME_SCREEN_WIDTH - 32));
         int y = (int)(Math.random() * (GameConstants.GAME_SCREEN_HEIGHT - 32));
         // Prevent spawning inside walls
-        Rectangle spawnArea = new Rectangle(x, y, GameConstants.POWERUP_SIZE, GameConstants.POWERUP_SIZE);
+        Rectangle spawnArea = new Rectangle(x, y, GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
         for (Wall wall : this.walls) {
             if (spawnArea.intersects(wall.getBounds())) return;
         }
@@ -160,9 +160,9 @@ public class GameWorld extends JPanel implements Runnable {
         BufferedImage z1img = ResourceManager.getInstance().getImage("vfx/zombie1.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
         BufferedImage z2img = ResourceManager.getInstance().getImage("vfx/zombie2.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
         BufferedImage bulletImg = ResourceManager.getInstance().getImage("vfx/bullet.png", GameConstants.GENERIC_SIZE/2, GameConstants.GENERIC_SIZE/2);
-        this.healthImg = ResourceManager.getInstance().getImage("vfx/health_brain_powerup.png", GameConstants.POWERUP_SIZE, GameConstants.POWERUP_SIZE);
-        this.speedImg = ResourceManager.getInstance().getImage("vfx/speed_potion_powerup.png", GameConstants.POWERUP_SIZE, GameConstants.POWERUP_SIZE);
-        this.shieldImg = ResourceManager.getInstance().getImage("vfx/shield_injection_powerup.png", GameConstants.POWERUP_SIZE, GameConstants.POWERUP_SIZE);
+        this.healthImg = ResourceManager.getInstance().getImage("vfx/health_brain_powerup.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
+        this.speedImg = ResourceManager.getInstance().getImage("vfx/speed_potion_powerup.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
+        this.shieldImg = ResourceManager.getInstance().getImage("vfx/shield_injection_powerup.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
         if (z1img == null || z2img == null || bulletImg == null || healthImg == null || speedImg == null || shieldImg == null) {
             System.err.println("Error: could not load png");
             System.exit(-3);

@@ -6,7 +6,6 @@ import java.util.Map;
 // don't go bigger than 1080p
 public class GameConstants {
     public static final int GENERIC_SIZE = 64;
-    public static final int POWERUP_SIZE = 48;
 
     private static final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     private static final int SCREEN_WIDTH = (int) screenSize.getWidth();

@@ -1,7 +1,6 @@
 package zombiegame.game;
 
 import zombiegame.GameConstants;
-import zombiegame.factories.ResourceFactory;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;

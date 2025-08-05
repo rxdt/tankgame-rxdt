@@ -1,7 +1,6 @@
-package zombiegame.factories;
+package zombiegame.game;
 
 import zombiegame.GameConstants;
-import zombiegame.game.ResourceManager;
 
 import java.awt.image.BufferedImage;
 
@@ -25,7 +24,7 @@ public class ResourceFactory {
         ResourceManager.getInstance().getImage("vfx/daisies.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
         ResourceManager.getInstance().getImage("vfx/log.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
         ResourceManager.getInstance().getImage("vfx/roses.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
-        ResourceManager.getInstance().getImage("vfx/sundlower.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
+        ResourceManager.getInstance().getImage("vfx/sunflower.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
         ResourceManager.getInstance().getImage("vfx/trees.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
         // sounds
         ResourceManager.getInstance().getSound("zombies-eating.wav");
