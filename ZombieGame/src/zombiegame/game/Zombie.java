@@ -47,11 +47,6 @@ public class Zombie extends GameObject {
         this.bullets = new ArrayList<>();
     }
 
-    @Override
-    public Rectangle getBounds() {
-        return new Rectangle((int)this.x, (int)this.y, this.img.getWidth(), this.img.getHeight());
-    }
-
    public void pressed(Direction dir) {
         keysPressed.add(dir);
     }

@@ -11,10 +11,6 @@ public class Wall extends GameObject {
         this.height = height;
     }
 
-    public Rectangle getBounds() {
-        return new Rectangle((int)x, (int)y, width, height);
-    }
-
     public void draw(Graphics2D g) {
         g.drawImage(img, (int)x, (int)y, width, height, null);
     }

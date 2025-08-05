@@ -167,8 +167,8 @@ public class GameWorld extends JPanel implements Runnable {
             System.err.println("Error: could not load png");
             System.exit(-3);
         }
-        zombie1 = new Zombie(300, 350, 0, 0, (short) 0, z1img); // green zombie
-        zombie2 = new Zombie(600, 350, 0, 0, (short) 0, z2img); // red zombie
+        zombie1 = new Zombie(300, 350, 0, 0, 0, z1img); // green zombie
+        zombie2 = new Zombie(600, 350, 0, 0, 0, z2img); // red zombie
         zombie2.setFacingOffset(180);
         zombie1.setBulletImage(bulletImg);
         zombie2.setBulletImage(bulletImg);

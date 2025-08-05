@@ -5,13 +5,15 @@ import java.awt.image.BufferedImage;
 
 public abstract class GameObject {
     protected int width, height;
-    protected float x, y, angle;
+    protected float x, y, vx, vy, angle;
     protected BufferedImage img;
 
     public GameObject(float x, float y, float vx, float vy, float angle, BufferedImage img) {
         this.img = img;
         this.x = x;
         this.y = y;
+        this.vx = vx;
+        this.vy = vy;
         this.angle = angle;
         this.width = img.getWidth();
         this.height = img.getHeight();

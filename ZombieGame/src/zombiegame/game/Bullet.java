@@ -1,11 +1,13 @@
 package zombiegame.game;
 
+import zombiegame.GameConstants;
+
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
 public class Bullet extends GameObject {
-    private float speed = 10f;
+    private float speed = GameConstants.BULLET_SPEED;
     private boolean active = true;
 
     public Bullet(float x, float y, float angle, BufferedImage img) {
@@ -23,10 +25,6 @@ public class Bullet extends GameObject {
         at.translate(x, y);
         at.rotate(Math.toRadians(angle), img.getWidth() / 2.0, img.getHeight() / 2.0);
         g.drawImage(img, at, null);
-    }
-
-    public Rectangle getBounds() {
-        return new Rectangle((int)x, (int)y, img.getWidth(), img.getHeight());
     }
 
     public boolean isActive() {
