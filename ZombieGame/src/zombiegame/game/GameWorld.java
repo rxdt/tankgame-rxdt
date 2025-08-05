@@ -47,6 +47,7 @@ public class GameWorld extends JPanel implements Runnable {
                     checkGameOver();
                 }
                 this.repaint();   // redraw game
+                removeInactiveBullets();
                 /*
                  * Sleep for 1000/144 ms (~6.9ms). This is done to have our
                  * loop run at a fixed rate per/sec.
@@ -344,10 +345,14 @@ public class GameWorld extends JPanel implements Runnable {
                 }
             }
         }
-        bullets.removeIf(b -> !b.isActive());
     }
 
     public boolean gameIsOver() {
         return this.gameOver;
+    }
+
+    private void removeInactiveBullets() {
+        zombie1.getBullets().removeIf(b -> !b.isActive());
+        zombie2.getBullets().removeIf(b -> !b.isActive());
     }
 }
