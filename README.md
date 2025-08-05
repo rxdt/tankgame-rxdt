@@ -1,5 +1,5 @@
 # csc413-zombiegame
-
+<img src="ZombieGame/resources/vfx/title.png" width="300">
 
 | Student Information |                 |
 |:-------------------:|-----------------|
@@ -8,9 +8,8 @@
 
 
 ## Purpose of jar Folder 
-The jar folder will store the built jar of your term project.
-
-`NO SOURCE CODE SHOULD BE IN THIS FOLDER. DOING SO WILL CAUSE POINTS TO BE DEDUCTED
+The jar folder will store the built jar
+`out/artifacts/tankgame_rxdt_jar/tankgame-rxdt.jar`
 
 `THIS FOLDER CAN NOT BE DELETED OR MOVED`
 
@@ -18,12 +17,13 @@ The jar folder will store the built jar of your term project.
 
 ## Version of Java Used: 24.0.1
 
-## IDE used: IntelliJ IDEA 2025.1.2 (Ultimate Edition) on Macbook Pro
+## IDE used: 
+### IntelliJ IDEA 2025.1.2 (Ultimate Edition) on Macbook Pro
 
 ## Steps to Import project into IDE:
 `git clone git@github.com:csc413-SFSU-SU2025/tankgame-rxdt.git`
 
-## Steps to Build Your Project:
+## Steps to Manually Build Project:
 ```
 >  cd tankgame-rxdt
 >  mkdir -p out
@@ -31,9 +31,13 @@ The jar folder will store the built jar of your term project.
 >  cp -r ZombieGame/resources/* out/
 ```
  
-## Steps to run your Project:
+## Steps to run Project:
 ```
 >  java -cp out zombiegame.Launcher
+```
+#### Or run the JAR directly
+```
+>  java -jar tankgame-rxdt/out/artifacts/tankgame_rxdt_jar/tankgame-rxdt.jar
 ```
 
 ## Controls to play Zombie Game:
