@@ -10,6 +10,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -296,8 +297,8 @@ public class GameWorld extends JPanel implements Runnable {
 
     // handles bullet movement, deteects wall collisipn, removes bullets that hit walls
     private void updateBullets(Zombie shooter, Zombie zombieTarget) {
-        List<Bullet> bullets = Collections.synchronizedList(shooter.getBullets());
-        for (Bullet bullet : bullets) {
+        List<Bullet> bulletSnapshot = new ArrayList<>(shooter.getBullets());
+        for (Bullet bullet : bulletSnapshot) {
             bullet.update();
             Rectangle bulletBounds = bullet.getBounds();
             // 1. Check wall collisions
@@ -319,13 +320,14 @@ public class GameWorld extends JPanel implements Runnable {
                 if (bulletBounds.intersects(targetBounds)) {
                     bullet.setActive(false);
                     if (!zombieTarget.isShieldActive()) {
+                        zombieTarget.onHit();
                         if (zombieTarget.getHealth() <= 0 && zombieTarget.getLives() >= 1) {
                             zombieTarget.deductALife();
                         }
                     }
                 }
             }
+            shooter.getBullets().removeIf(b -> !b.isActive());
         }
-        bullets.removeIf(b -> !b.isActive());
     }
 }

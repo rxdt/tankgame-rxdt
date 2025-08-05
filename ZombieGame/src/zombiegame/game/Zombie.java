@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Zombie extends GameObject {
     public enum Direction {UP, DOWN, LEFT, RIGHT, SHOOT}
@@ -21,7 +22,7 @@ public class Zombie extends GameObject {
     private float ROTATIONSPEED = 3.0f;
 
     private BufferedImage bulletImg;
-    private List<Bullet> bullets = new ArrayList<>();
+    private List<Bullet> bullets;
     private float facingOffset = 0f;
 
     private boolean isHit = false;
@@ -44,6 +45,7 @@ public class Zombie extends GameObject {
     Zombie(float x, float y, float vx, float vy, float angle, BufferedImage img) {
         super(x, y, vx, vy, angle, img);
         this.boostTimer = System.currentTimeMillis();
+        this.bullets = new ArrayList<>();
     }
 
     @Override
@@ -237,6 +239,7 @@ public class Zombie extends GameObject {
     public void onHit() {
         ResourceManager.getInstance().playSound("zombie_hit.wav");
         this.health -= 5;
+        System.out.println("zombie.onHit() health now:  " + health);
         this.isHit = true;
         this.hitTime = System.currentTimeMillis();
     }
