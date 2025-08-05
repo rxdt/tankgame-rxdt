@@ -75,6 +75,7 @@ public class GameWorld extends JPanel implements Runnable {
             ResourceManager.getInstance().stopAllSounds();
             ResourceManager.getInstance().playLoopedSound("Plants vs. Zombies - Moongrains.wav");
             this.winnerText = zombie1Lives > zombie2Lives ? "Green zombie has won!" : "Red zombie has won!";
+            launcher.getEndGamePanel().setWinnerText(this.winnerText);
             Timer timer = new Timer(3000, e -> launcher.setFrame("end"));
             timer.setRepeats(false);
             timer.start();

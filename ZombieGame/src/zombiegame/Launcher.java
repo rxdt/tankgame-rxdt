@@ -120,4 +120,8 @@ public class Launcher {
     public static void main(String[] args) {
         (new Launcher()).initUIComponents();
     }
+
+    public EndGamePanel getEndGamePanel() {
+        return this.endPanel;
+    }
 }
