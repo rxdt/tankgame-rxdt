@@ -79,13 +79,6 @@ public class ResourceManager {
         }
     }
 
-    public void stopSound(String fileName) {
-        Clip clip = soundCache.get(fileName);
-        if (clip != null && clip.isRunning()) {
-            clip.stop();
-        }
-    }
-
     public void stopAllSounds() {
         for (Clip clip : soundCache.values()) {
             if (clip != null && clip.isRunning()) {

@@ -19,6 +19,14 @@ public class ResourceFactory {
         ResourceManager.getInstance().getImage("vfx/health_brain_powerup.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
         ResourceManager.getInstance().getImage("vfx/speed_potion_powerup.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
         ResourceManager.getInstance().getImage("vfx/shield_injection_powerup.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
+        ResourceManager.getInstance().getImage("vfx/blue_flowers.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
+        ResourceManager.getInstance().getImage("vfx/bullet.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
+        ResourceManager.getInstance().getImage("vfx/bush.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
+        ResourceManager.getInstance().getImage("vfx/daisies.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
+        ResourceManager.getInstance().getImage("vfx/log.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
+        ResourceManager.getInstance().getImage("vfx/roses.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
+        ResourceManager.getInstance().getImage("vfx/sundlower.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
+        ResourceManager.getInstance().getImage("vfx/trees.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
         // sounds
         ResourceManager.getInstance().getSound("zombies-eating.wav");
         ResourceManager.getInstance().getSound("Plants vs. Zombies - Moongrains.wav");
