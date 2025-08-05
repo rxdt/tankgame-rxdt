@@ -264,6 +264,9 @@ public class GameWorld extends JPanel implements Runnable {
         BufferedImage rightView = getViewport(zombie2.getX(), zombie2.getY(), viewWidth, viewHeight);
         // Draw both views side by side
         g2.drawImage(leftView, 0, 0, null);
+        g2.setColor(Color.BLACK);
+        g2.setStroke(new BasicStroke(3));
+        g2.drawLine(viewWidth, 0, viewWidth, viewHeight);
         g2.drawImage(rightView, viewWidth, 0, null);
         drawMiniMap(g2);
         if (gameOver && winnerText != null) {
