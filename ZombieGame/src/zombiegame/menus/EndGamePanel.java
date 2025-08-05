@@ -1,69 +1,63 @@
 package zombiegame.menus;
 
+import zombiegame.GameConstants;
 import zombiegame.Launcher;
+import zombiegame.game.GameWorld;
 import zombiegame.game.ResourceManager;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class EndGamePanel extends JPanel {
 
     private String winnerText = "Game Over"; // default
     private final Launcher launcher;
+    private BufferedImage green = ResourceManager.getInstance().getImage("vfx/zombie1.png", GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT);
+    private BufferedImage red = ResourceManager.getInstance().getImage("vfx/zombie2.png", GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT);
 
     public EndGamePanel(Launcher launcher) {
+
         this.launcher = launcher;
+        ResourceManager.getInstance().playLoopedSound("plants-vs-zombies-halloween-spooky.wav");
         this.setBackground(Color.BLACK);
         this.setLayout(new BorderLayout());
         Color neonGreen = new Color(57, 255, 20);
 
-        JButton restartButton = new JButton("Restart Game");
-        restartButton.setFont(new Font("Courier New", Font.BOLD, 28));
-        restartButton.setForeground(neonGreen);
-        restartButton.setFocusPainted(false);
-        restartButton.setContentAreaFilled(false);
-        restartButton.setOpaque(false);
-        restartButton.setBorder(BorderFactory.createCompoundBorder(
+        JButton restartGame = new JButton("Restart Game");
+        restartGame.setFont(new Font("Courier New", Font.BOLD, 24));
+        restartGame.setForeground(neonGreen);
+        restartGame.setFocusPainted(false);
+        restartGame.setContentAreaFilled(false);
+        restartGame.setOpaque(false);
+        restartGame.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(neonGreen, 2),
-                BorderFactory.createEmptyBorder(10, 20, 10, 20)
-        ));
-        restartButton.setPreferredSize(new Dimension(240, 60));
-        restartButton.addActionListener(actionEvent -> {
-            this.launcher.getGamePanel().resetGame(); // reset game world
-            Thread gameThread = new Thread(this.launcher.getGamePanel());
-            gameThread.start();
+                BorderFactory.createEmptyBorder(10, 20, 10, 20)));
+        restartGame.addActionListener(actionEvent -> {
             ResourceManager.getInstance().stopAllSounds();
-            this.launcher.setFrame("game"); // switch to game view
+            this.launcher.setFrame("game");
             ResourceManager.getInstance().playLoopedSound("Plants vs. Zombies - Ultimate Battle.wav");
         });
 
-        JButton exitButton = new JButton("Exit");
-        exitButton.setFont(new Font("Courier New", Font.BOLD, 28));
-        exitButton.setForeground(neonGreen);
-        exitButton.setFocusPainted(false);
-        exitButton.setContentAreaFilled(false);
-        exitButton.setOpaque(false);
-        exitButton.setBorder(BorderFactory.createCompoundBorder(
+        JButton exit = new JButton("Exit");
+        exit.setFont(new Font("Courier New", Font.BOLD, 24));
+        exit.setForeground(neonGreen);
+        exit.setFocusPainted(false);
+        exit.setContentAreaFilled(false);
+        exit.setOpaque(false);
+        exit.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(neonGreen, 2),
-                BorderFactory.createEmptyBorder(10, 20, 10, 20)
-        ));
-        exitButton.setPreferredSize(new Dimension(240, 60));
-        exitButton.addActionListener(actionEvent -> this.launcher.closeGame());
+                BorderFactory.createEmptyBorder(10, 20, 10, 20)));
 
+        exit.addActionListener((actionEvent -> this.launcher.closeGame()));
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setOpaque(false);
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
-        buttonPanel.add(Box.createVerticalGlue());
-        restartButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        exitButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        buttonPanel.add(restartButton);
-        buttonPanel.add(Box.createRigidArea(new Dimension(0, 30)));
-        buttonPanel.add(exitButton);
-        buttonPanel.add(Box.createVerticalGlue());
-
-        this.add(buttonPanel, BorderLayout.CENTER);
+        buttonPanel.setOpaque(false); // make transparent to show background
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 50, 20)); // center, horizontal gap = 50
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 40, 0)); // bottom padding
+        buttonPanel.add(restartGame);
+        buttonPanel.add(exit);
+        this.add(buttonPanel, BorderLayout.SOUTH);
     }
-
 
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -72,6 +66,18 @@ public class EndGamePanel extends JPanel {
         FontMetrics fm = g.getFontMetrics();
         int textWidth = fm.stringWidth(this.winnerText);
         g.drawString(this.winnerText, (getWidth() - textWidth) / 2, 150); // Adjust vertical position
+
+        if (this.winnerText.contains("Green")) { // green won, red is loser/hit
+            this.red = ResourceManager.getInstance().getImage("vfx/zombie2_hit.png", GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT);
+        } else if (this.winnerText.contains("Red")) { // red won, green is loser/hit
+            this.green = ResourceManager.getInstance().getImage("vfx/zombie1_hit.png", GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT);
+        }
+        if (green == null || red == null) {
+            System.err.println("Error: cannot load menu end game images");
+            System.exit(-3);
+        }
+        g.drawImage(this.green, GameConstants.GAME_SCREEN_WIDTH/4, GameConstants.GAME_SCREEN_HEIGHT/4, GameConstants.GENERIC_SIZE*4, GameConstants.GENERIC_SIZE*4, null);
+        g.drawImage(this.red, GameConstants.GAME_SCREEN_WIDTH/2, GameConstants.GAME_SCREEN_HEIGHT/4, GameConstants.GENERIC_SIZE*4, GameConstants.GENERIC_SIZE*4, null);
     }
 
     public void setWinnerText(String text) {

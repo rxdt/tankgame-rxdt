@@ -273,7 +273,7 @@ public class GameWorld extends JPanel implements Runnable {
         if (gameOver && winnerText != null) {
             g2.setColor(new Color(0, 0, 0, 150));
             g2.fillRect(0, 0, GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT);
-            g2.setColor(Color.CYAN);
+            g2.setColor(Color.GREEN);
             g2.setFont(new Font("Papyrus", Font.BOLD, 70));
             FontMetrics fm = g2.getFontMetrics();
             int textWidth = fm.stringWidth(winnerText);
