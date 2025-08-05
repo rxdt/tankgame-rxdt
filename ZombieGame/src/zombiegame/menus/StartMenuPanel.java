@@ -23,11 +23,18 @@ public class StartMenuPanel extends JPanel {
             System.exit(-3);
         }
         this.setBackground(Color.BLACK);
-        this.setLayout(null);
+        this.setLayout(new BorderLayout());
+        Color neonGreen = new Color(57, 255, 20);
 
         JButton start = new JButton("Start");
         start.setFont(new Font("Courier New", Font.BOLD, 24));
-        start.setBounds(150, 300, 150, 50);
+        start.setForeground(neonGreen);
+        start.setFocusPainted(false);
+        start.setContentAreaFilled(false);
+        start.setOpaque(false);
+        start.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(neonGreen, 2),
+                BorderFactory.createEmptyBorder(10, 20, 10, 20)));
         start.addActionListener(actionEvent -> {
             ResourceManager.getInstance().stopAllSounds();
             this.launcher.setFrame("game");
@@ -35,13 +42,23 @@ public class StartMenuPanel extends JPanel {
         });
 
         JButton exit = new JButton("Exit");
-        exit.setSize(new Dimension(200, 100));
         exit.setFont(new Font("Courier New", Font.BOLD, 24));
-        exit.setBounds(150, 400, 150, 50);
-        exit.addActionListener((actionEvent -> this.launcher.closeGame()));
+        exit.setForeground(neonGreen);
+        exit.setFocusPainted(false);
+        exit.setContentAreaFilled(false);
+        exit.setOpaque(false);
+        exit.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(neonGreen, 2),
+                BorderFactory.createEmptyBorder(10, 20, 10, 20)));
 
-        this.add(start);
-        this.add(exit);
+        exit.addActionListener((actionEvent -> this.launcher.closeGame()));
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setOpaque(false); // make transparent to show background
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 50, 20)); // center, horizontal gap = 50
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 40, 0)); // bottom padding
+        buttonPanel.add(start);
+        buttonPanel.add(exit);
+        this.add(buttonPanel, BorderLayout.SOUTH);
     }
 
     @Override
