@@ -30,4 +30,8 @@ public class GameConstants {
     public static final long ANIMATION_DURATION = 300;
     public static final double SPEED_BOOST = 5.0;
     public static final float BULLET_SPEED = 10f;
+
+    public static final String EXIT = "EXIT";
+    public static final String START_GAME = "START GAME";
+    public static final String PLAY_AGAIN = "PLAY AGAIN";
 }
