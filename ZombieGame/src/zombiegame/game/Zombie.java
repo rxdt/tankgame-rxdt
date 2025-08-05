@@ -262,7 +262,7 @@ public class Zombie extends GameObject {
     public void heal(int healAmount) {
         ResourceManager.getInstance().playSound("zombies-eating.wav");
         try {
-            Thread.sleep(150); // wait 150 milliseconds
+            Thread.sleep(100); // wait 1 second
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }

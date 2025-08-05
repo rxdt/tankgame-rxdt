@@ -9,10 +9,7 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-
 
 public class GameWorld extends JPanel implements Runnable {
 
@@ -268,7 +265,7 @@ public class GameWorld extends JPanel implements Runnable {
         // Draw both views side by side
         g2.drawImage(leftView, 0, 0, null);
         g2.drawImage(rightView, viewWidth, 0, null);
-
+        drawMiniMap(g2);
         if (gameOver && winnerText != null) {
             g2.setColor(new Color(0, 0, 0, 150));
             g2.fillRect(0, 0, GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT);
@@ -278,6 +275,20 @@ public class GameWorld extends JPanel implements Runnable {
             int textWidth = fm.stringWidth(winnerText);
             g2.drawString(winnerText, (GameConstants.GAME_SCREEN_WIDTH - textWidth) / 2, GameConstants.GAME_SCREEN_HEIGHT / 2);
         }
+    }
+
+    private void drawMiniMap(Graphics2D g2) {
+        int miniWidth = GameConstants.GAME_SCREEN_WIDTH / 4;
+        int miniHeight = GameConstants.GAME_SCREEN_HEIGHT / 4;
+        int xOffset = (GameConstants.GAME_SCREEN_WIDTH - miniWidth) / 2;
+        int yOffset = GameConstants.GAME_SCREEN_HEIGHT - miniHeight - 15;
+        Composite originalComposite = g2.getComposite();
+        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
+        g2.drawImage(world, xOffset, yOffset, miniWidth, miniHeight, null);
+        g2.setComposite(originalComposite);
+        g2.setColor(Color.WHITE);
+        g2.setStroke(new BasicStroke(2));
+        g2.drawRect(xOffset - 1, yOffset - 1, miniWidth + 1, miniHeight + 1);
     }
 
     private BufferedImage getViewport(float centerX, float centerY, int width, int height) {
