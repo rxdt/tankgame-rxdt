@@ -11,8 +11,8 @@ public class GameConstants {
     private static final int SCREEN_WIDTH = (int) screenSize.getWidth();
     private static final int SCREEN_HEIGHT = (int) screenSize.getHeight();
 
-    public static final int FULLSCREEN_WIDTH = Math.min(SCREEN_WIDTH, 1920);
-    public static final int FULLSCREEN_HEIGHT = Math.min(SCREEN_HEIGHT, 1080);
+    public static final int FULLSCREEN_WIDTH = Math.min(SCREEN_WIDTH-10, 1920-10);
+    public static final int FULLSCREEN_HEIGHT = Math.min(SCREEN_HEIGHT-25, 1080-25);
 
     public static final int GAME_SCREEN_WIDTH = FULLSCREEN_WIDTH;
     public static final int GAME_SCREEN_HEIGHT = FULLSCREEN_HEIGHT;

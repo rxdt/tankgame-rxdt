@@ -1,6 +1,5 @@
 package zombiegame.menus;
 
-
 import zombiegame.GameConstants;
 import zombiegame.Launcher;
 import zombiegame.game.ResourceManager;
