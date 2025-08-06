@@ -223,11 +223,11 @@ public class GameWorld extends JPanel implements Runnable {
                 switch (code) {
                     case 1: // Non-breakable flowers
                         this.walls.add(new Wall(x, y, GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE,
-                                breakable.get((int)(Math.random() * breakable.size()))));
+                                nonBreakable.get((int)(Math.random() * nonBreakable.size()))));
                         break;
                     case 2: // Breakable
                         this.walls.add(new BreakableWall(x, y, GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE,
-                                nonBreakable.get((int)(Math.random() * nonBreakable.size()))));
+                                breakable.get((int)(Math.random() * breakable.size()))));
                         break;
                 }
             }
@@ -353,7 +353,11 @@ public class GameWorld extends JPanel implements Runnable {
     }
 
     private void removeInactiveBullets() {
-        zombie1.getBullets().removeIf(b -> !b.isActive());
-        zombie2.getBullets().removeIf(b -> !b.isActive());
+        synchronized (zombie1.getBullets()) {
+            zombie1.getBullets().removeIf(b -> !b.isActive());
+        }
+        synchronized (zombie1.getBullets()) {
+            zombie2.getBullets().removeIf(b -> !b.isActive());
+        }
     }
 }

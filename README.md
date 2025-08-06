@@ -4,12 +4,11 @@
 | Student Information |                 |
 |:-------------------:|-----------------|
 |  Student Name       | Roxana del Toro |
-|  Student Email      | rxdt@sfsu.edi   |
+|  Student Email      | rxdt@sfsu.edu   |
 
 
 ## Purpose of jar Folder 
-The jar folder will store the built jar
-`out/artifacts/tankgame_rxdt_jar/tankgame-rxdt.jar`
+The jar folder will store the built jar `jar/tankgame-rxdt.jar`
 
 `THIS FOLDER CAN NOT BE DELETED OR MOVED`
 
@@ -30,14 +29,18 @@ The jar folder will store the built jar
 >  javac -d out $(find ZombieGame/src -name "*.java")
 >  cp -r ZombieGame/resources/* out/
 ```
- 
-## Steps to run Project:
+## Steps to Build the JAR
+```
+>  mkdir -p jar
+>  jar cfm jar/tankgame-rxdt.jar manifest.txt -C out .
+```
+## Steps to Run Project:
 ```
 >  java -cp out zombiegame.Launcher
 ```
-#### Or run the JAR directly
+## Alternate steps to run the project - run the JAR directly
 ```
->  java -jar tankgame-rxdt/out/artifacts/tankgame_rxdt_jar/tankgame-rxdt.jar
+>  java -jar tankgame-rxdt/jar/tankgame-rxdt.jar
 ```
 
 ## Controls to play Zombie Game:
@@ -50,3 +53,21 @@ The jar folder will store the built jar
 |  Rotate Right | D                | right arrow    |
 |  Shoot        | space            | enter          |
 
+## Power Ups
+#### HEALTH
+Eat a brain and gain 35 health points <br>
+<img src="ZombieGame/resources/vfx/health_brain_powerup.png" width="100"> 
+
+#### SHIELD
+Pick up a shield and become invincible to an opponent's bullets <br>
+<img src="ZombieGame/resources/vfx/shield_injection_powerup.png" width="100"> 
+
+#### SPEED
+3X your speed with a battery boost <br>
+<img src="ZombieGame/resources/vfx/speed_potion_powerup.png" width="100"> 
+
+## Breakable Walls - Flowers 
+<img src="ZombieGame/resources/vfx/sunflower.png" width="50"><img src="ZombieGame/resources/vfx/daisies.png" width="50"><img src="ZombieGame/resources/vfx/blue_flowers.png" width="50"><img src="ZombieGame/resources/vfx/roses.png" width="50">
+
+## Non-breakable Walls - Trees and Shrubs
+<img src="ZombieGame/resources/vfx/bush.png" width="100"><img src="ZombieGame/resources/vfx/log.png" width="75"><img src="ZombieGame/resources/vfx/trees.png" width="50">

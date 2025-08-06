@@ -38,7 +38,9 @@ public class EndGamePanel extends MenuPanel {
         this.winnerText = text;
         if (this.winnerText.contains("Green")) { // green won, red is loser/hit
             this.red = ResourceManager.getInstance().getImage("vfx/zombie2_hit.png", GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT);
+            this.green = ResourceManager.getInstance().getImage("vfx/zombie1.png", GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT);
         } else if (this.winnerText.contains("Red")) { // red won, green is loser/hit
+            this.red = ResourceManager.getInstance().getImage("vfx/zombie2.png", GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT);
             this.green = ResourceManager.getInstance().getImage("vfx/zombie1_hit.png", GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT);
         }
         if (green == null || red == null) {

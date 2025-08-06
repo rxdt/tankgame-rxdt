@@ -88,6 +88,10 @@ public class Zombie extends GameObject {
                     health = GameConstants.MAX_HEALTH;
                     exploding = false;
                     explosionFrame = 0;
+                    lastMovementTime = System.currentTimeMillis();
+                    breathing = false;
+                    breathingScale = 1.0f;
+                    breathingIn = true;
                 }
             }
             return;
@@ -116,7 +120,7 @@ public class Zombie extends GameObject {
             breathing = false; // reset breathing state
         } else {
             long idleTime = System.currentTimeMillis() - lastMovementTime;
-            if (idleTime > 20000) {
+            if (idleTime > 25000) {
                 if (!breathing) {
                     ResourceManager.getInstance().playSound("zombie_idle.wav");
                     breathing = true;
@@ -124,7 +128,6 @@ public class Zombie extends GameObject {
                 updateBreathingAnimation();
             }
         }
-
         Rectangle nextBounds = new Rectangle((int)x, (int)y, this.img.getWidth(), this.img.getHeight());
         for (Wall wall : walls) {
             if (nextBounds.intersects(wall.getBounds())) {
@@ -271,7 +274,9 @@ public class Zombie extends GameObject {
                 (float)(spawnDistance * Math.cos(Math.toRadians(bulletAngle)));
         float bulletY = y + img.getHeight() / 2f - bulletImg.getHeight() / 2f +
                 (float)(spawnDistance * Math.sin(Math.toRadians(bulletAngle)));
-        bullets.add(new Bullet(bulletX, bulletY, bulletAngle, bulletImg));
+        synchronized (this.getBullets()) {
+            bullets.add(new Bullet(bulletX, bulletY, bulletAngle, bulletImg));
+        }
         ResourceManager.getInstance().playSound("bullet-shot.wav");
     }
 
