@@ -98,14 +98,11 @@ public abstract class PowerUp extends GameObject {
 
     public void updateGlow() {
         if (glowGrowing) {
-            glowAlpha += 0.02f;
+            glowAlpha += 0.005f;
             if (glowAlpha >= 0.9f) glowGrowing = false;
         } else {
-            glowAlpha -= 0.02f;
+            glowAlpha -= 0.005f;
             if (glowAlpha <= 0.3f) glowGrowing = true;
         }
-    }
-    public float getGlowAlpha() {
-        return glowAlpha;
     }
 }

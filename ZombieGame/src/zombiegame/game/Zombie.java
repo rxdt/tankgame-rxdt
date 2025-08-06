@@ -15,7 +15,6 @@ public class Zombie extends GameObject {
 
     private float vx; // useful for simple approach to collisions, velocity x distance traveled over time
     private float vy; // useful for simple approach to collisions, velocity y
-
     private float R = 5; // speed
     private float ROTATIONSPEED = 3.0f;
 
@@ -25,7 +24,6 @@ public class Zombie extends GameObject {
 
     private boolean isHit = false;
     private long hitTime = 0;
-
     private int health = GameConstants.MAX_HEALTH; // 100
     private int lives = GameConstants.LIVES;
 
@@ -39,6 +37,11 @@ public class Zombie extends GameObject {
     private static final int EXPLOSION_FRAME_INTERVAL = 200;
     private static final int RESPAWN_DELAY = 2500;
     private long explosionStartTime = 0;
+
+    private long lastMovementTime = System.currentTimeMillis();
+    private boolean breathing = false;
+    private float breathingScale = 1.0f;
+    private boolean breathingIn = true;
 
     Zombie(float x, float y, float vx, float vy, float angle, BufferedImage img) {
         super(x, y, vx, vy, angle, img);
@@ -89,20 +92,39 @@ public class Zombie extends GameObject {
             }
             return;
         }
+        boolean moved = false;
         float originalX = x;
         float originalY = y;
         if (this.keysPressed.contains(Direction.UP)) {
             this.moveForwards();
+            moved = true;
         }
         if (this.keysPressed.contains(Direction.DOWN)) {
             this.moveBackwards();
+            moved = true;
         }
         if (this.keysPressed.contains(Direction.LEFT)) {
             this.rotateLeft();
+            moved = true;
         }
         if (this.keysPressed.contains(Direction.RIGHT)) {
             this.rotateRight();
+            moved = true;
         }
+        if (moved || x != originalX || y != originalY) {
+            lastMovementTime = System.currentTimeMillis();
+            breathing = false; // reset breathing state
+        } else {
+            long idleTime = System.currentTimeMillis() - lastMovementTime;
+            if (idleTime > 20000) {
+                if (!breathing) {
+                    ResourceManager.getInstance().playSound("zombie_idle.wav");
+                    breathing = true;
+                }
+                updateBreathingAnimation();
+            }
+        }
+
         Rectangle nextBounds = new Rectangle((int)x, (int)y, this.img.getWidth(), this.img.getHeight());
         for (Wall wall : walls) {
             if (nextBounds.intersects(wall.getBounds())) {
@@ -121,6 +143,17 @@ public class Zombie extends GameObject {
             }
         }
         resetPowerUps();
+    }
+
+    private void updateBreathingAnimation() {
+        float delta = 0.0005f;
+        if (breathingIn) {
+            breathingScale += delta;
+            if (breathingScale >= 1.03f) breathingIn = false;
+        } else {
+            breathingScale -= delta;
+            if (breathingScale <= 0.97f) breathingIn = true;
+        }
     }
 
     private void rotateLeft() {
@@ -191,6 +224,11 @@ public class Zombie extends GameObject {
             g2d.dispose();
             g.drawImage(tinted, at, null);
         } else {
+            AffineTransform scaleTransform = new AffineTransform();
+            scaleTransform.translate(this.img.getWidth() / 2.0, this.img.getHeight() / 2.0);
+            scaleTransform.scale(breathing ? breathingScale : 1.0, breathing ? breathingScale : 1.0);
+            scaleTransform.translate(-this.img.getWidth() / 2.0, -this.img.getHeight() / 2.0);
+            at.concatenate(scaleTransform);
             g.drawImage(this.img, at, null);
             isHit = false; // reset if time passed
         }
