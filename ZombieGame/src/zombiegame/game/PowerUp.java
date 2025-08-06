@@ -12,6 +12,8 @@ public abstract class PowerUp extends GameObject {
     private boolean disappearing = false;
     private boolean fullyDisappeared = false;
     private long animationStartTime;
+    private float glowAlpha = 0.5f;
+    private boolean glowGrowing = true;
 
     public PowerUp(int x, int y, BufferedImage img) {
         super(x, y, 0, 0, 0, img);
@@ -28,13 +30,21 @@ public abstract class PowerUp extends GameObject {
 
     @Override
     public void draw(Graphics2D g) {
+        if (scale <= 0.01) return;
         int width = (int)(img.getWidth() * scale);
         int height = (int)(img.getHeight() * scale);
-        float drawX = x + (img.getWidth() - width) / 2;
-        float drawY = y + (img.getHeight() - height) / 2;
-        if (scale > 0.01) {
-            g.drawImage(img, (int)drawX, (int)drawY, width, height, null);
-        }
+        float drawX = x + (img.getWidth() - width) / 2f;
+        float drawY = y + (img.getHeight() - height) / 2f;
+        // pulsing glow behind powerup
+        int glowSize = (int)(Math.max(width, height) * 1.15); // slightly larger than powerup
+        int glowX = (int)(x + (img.getWidth() - glowSize) / 2f);
+        int glowY = (int)(y + (img.getHeight() - glowSize) / 2f);
+        Composite originalComposite = g.getComposite();
+        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, glowAlpha)); // make glow pulse
+        g.setColor(Color.ORANGE);
+        g.fillOval(glowX, glowY, glowSize, glowSize);
+        g.setComposite(originalComposite);
+        g.drawImage(img, (int)drawX, (int)drawY, width, height, null);
     }
 
     public abstract void applyTo(Zombie zombie);
@@ -84,5 +94,18 @@ public abstract class PowerUp extends GameObject {
                 fullyDisappeared = true;
             }
         }
+    }
+
+    public void updateGlow() {
+        if (glowGrowing) {
+            glowAlpha += 0.02f;
+            if (glowAlpha >= 0.9f) glowGrowing = false;
+        } else {
+            glowAlpha -= 0.02f;
+            if (glowAlpha <= 0.3f) glowGrowing = true;
+        }
+    }
+    public float getGlowAlpha() {
+        return glowAlpha;
     }
 }

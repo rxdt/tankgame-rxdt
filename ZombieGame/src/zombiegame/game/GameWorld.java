@@ -62,7 +62,8 @@ public class GameWorld extends JPanel implements Runnable {
     private void updatePowerUps() {
         synchronized (powerUps) {
             for (PowerUp powerUp : powerUps) {
-                powerUp.update(); // grows, shrinks
+                powerUp.update(); // grows/appears, shrinks/disappears
+                powerUp.updateGlow(); // pulsing glow
             }
         }
     }
