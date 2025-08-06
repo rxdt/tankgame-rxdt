@@ -335,7 +335,7 @@ public class GameWorld extends JPanel implements Runnable {
                 }
             }
             // 2. Check if bullet hits the other zombie
-            if (bullet.isActive() && bulletBounds.intersects(targetBounds)) {
+            if (bullet.isActive() && !target.isExploding() && bulletBounds.intersects(targetBounds)) {
                 bullet.setActive(false);
                 if (!target.isShieldActive()) {
                     target.onHit();

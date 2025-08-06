@@ -245,9 +245,11 @@ public class Zombie extends GameObject {
         return this.img;
     }
 
-    // trigger red flash and play hit sound, explodw if life lost
+    // trigger red flash and play hit sound, explode if life lost
     public void onHit() {
-        ResourceManager.getInstance().playSound("zombie_hit.wav");
+        if (this.lives > 0) {
+            ResourceManager.getInstance().playSound("zombie_hit.wav");
+        }
         this.health -= 5;
         this.isHit = true;
         this.hitTime = System.currentTimeMillis();
@@ -315,5 +317,9 @@ public class Zombie extends GameObject {
 
     public boolean isShieldActive() {
         return this.shielded && (System.currentTimeMillis() - boostTimer <= GameConstants.POWERUP_DURATION);
+    }
+
+    public boolean isExploding() {
+        return this.exploding;
     }
 }
