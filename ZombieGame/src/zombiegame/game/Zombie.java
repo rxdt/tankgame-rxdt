@@ -1,6 +1,9 @@
 package zombiegame.game;
 
 import zombiegame.GameConstants;
+import zombiegame.game.resources.ResourceFactory;
+import zombiegame.game.resources.ResourceManager;
+import zombiegame.game.walls.Wall;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -31,6 +34,7 @@ public class Zombie extends GameObject {
     private boolean shielded = false;
     private double speedMultiplier = 1.0;
     private long boostTimer;
+    private boolean laserEnabled = false;
 
     private boolean exploding = false;
     private int explosionFrame = 0;
@@ -38,6 +42,7 @@ public class Zombie extends GameObject {
     private static final int EXPLOSION_FRAME_INTERVAL = 200;
     private static final int RESPAWN_DELAY = 2500;
     private long explosionStartTime = 0;
+    private long laserStartTime = 0;
 
     private long lastMovementTime = System.currentTimeMillis();
     private boolean breathing = false;
@@ -82,6 +87,8 @@ public class Zombie extends GameObject {
             this.glowStartTime = System.currentTimeMillis();
             this.konamiGlowingOn = true;
             this.glowDuration = GameConstants.POWERUP_DURATION;
+            this.laserEnabled = true;
+            this.laserStartTime = System.currentTimeMillis();
             ResourceManager.getInstance().playSound("pick_up.wav");
             System.out.println("KONAMI UNLOCK");
             konamiBuffer.clear();
@@ -281,12 +288,13 @@ public class Zombie extends GameObject {
         g.setFont(new Font("Arial", Font.PLAIN, 14));
         g.drawString("Lives: " + lives, x, y - 15);
         if (this.speedMultiplier > 1.0) {
-            g.drawString("SPEED ON", x, y - 35);
+            g.drawString(GameConstants.SPEED_ON, x, y - 50);
         }
         // Show shield while active
         if (isShieldActive()) {
             g.setColor(new Color(0, 255, 255, 255));
             g.drawOval((int)x - 8, (int)y - 8, img.getWidth() + 16, img.getHeight() + 16);
+            g.drawString(GameConstants.SHIELD_ON, x, y - 35);
         }
         if (konamiGlowingOn) {
             float alpha = (float)(Math.sin((System.currentTimeMillis() - glowStartTime) / 200.0) * 0.2 + 0.7);
@@ -300,7 +308,7 @@ public class Zombie extends GameObject {
         if (showKonamiMessage) {
             long elapsed = System.currentTimeMillis() - konamiMessageStartTime;
             if (elapsed < GameConstants.KONAMI_MESSAGE_DURATION) {
-                g.setColor(Color.BLACK);
+                g.setColor(Color.WHITE);
                 g.setFont(new Font("Comic Sans", Font.BOLD, 22));
                 FontMetrics fm = g.getFontMetrics();
                 int messageWidth = fm.stringWidth(GameConstants.SECRET_MESSAGE);
@@ -328,10 +336,15 @@ public class Zombie extends GameObject {
                 (float)(spawnDistance * Math.cos(Math.toRadians(bulletAngle)));
         float bulletY = y + img.getHeight() / 2f - bulletImg.getHeight() / 2f +
                 (float)(spawnDistance * Math.sin(Math.toRadians(bulletAngle)));
-        synchronized (this.getBullets()) {
-            bullets.add(new Bullet(bulletX, bulletY, bulletAngle, bulletImg));
+        Bullet newBullet = new Bullet(bulletX, bulletY, bulletAngle, bulletImg, laserEnabled);
+        if (laserEnabled) {
+            ResourceManager.getInstance().playSound("laser_shot.wav");
+        } else {
+            ResourceManager.getInstance().playSound("bullet-shot.wav");
         }
-        ResourceManager.getInstance().playSound("bullet-shot.wav");
+        synchronized (this.getBullets()) {
+            bullets.add(newBullet);
+        }
     }
 
     public void setFacingOffset(float offset) {
@@ -343,11 +356,11 @@ public class Zombie extends GameObject {
     }
 
     // trigger red flash and play hit sound, explode if life lost
-    public void onHit() {
+    public void onHit(int damage) {
         if (this.lives > 0) {
             ResourceManager.getInstance().playSound("zombie_hit.wav");
         }
-        this.health -= 5;
+        this.health -= damage;
         this.isHit = true;
         this.hitTime = System.currentTimeMillis();
     }
@@ -393,6 +406,9 @@ public class Zombie extends GameObject {
             this.shielded = false;
             this.konamiGlowingOn = false;
         }
+        if (laserEnabled && System.currentTimeMillis() - laserStartTime > GameConstants.POWERUP_DURATION) {
+            laserEnabled = false;
+        }
     }
 
     public int getHealth() {
@@ -419,5 +435,12 @@ public class Zombie extends GameObject {
 
     public boolean isExploding() {
         return this.exploding;
+    }
+
+    public void enableLaser() {
+        System.out.println("Zombie laser enabled");
+        ResourceManager.getInstance().playSound("laser_pickup.wav");
+        this.laserEnabled = true;
+        this.laserStartTime = System.currentTimeMillis();
     }
 }

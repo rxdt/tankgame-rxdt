@@ -26,16 +26,18 @@ public class GameConstants {
     }};
 
     public static final int MAX_HEALTH = 100;
-    public static final int POWERUP_DURATION = 8000; // 8 seconds
-    public static final int POWERUP_SPAWN_COOLDOWN = 10000;
+    public static final int POWERUP_DURATION = 9000; // 9 seconds
+    public static final int POWERUP_SPAWN_COOLDOWN = 13000;
     public static final int LIVES = 3;
     public static final int HIT_FLASH_DURATION_MS = 200;
     public static final long ANIMATION_DURATION = 300;
     public static final double SPEED_BOOST = 3.0;
-    public static final float BULLET_SPEED = 10f;
+    public static final float BULLET_SPEED = 9f;
     public static final int IDLE_TIME_BEFORE_BREATHE = 30000;
     public static final int KONAMI_MESSAGE_DURATION = 2000;
     public static final String SECRET_MESSAGE = "Secret code unlock";
+    public static final String SPEED_ON = "SPEED 3X";
+    public static final String SHIELD_ON = "SHIELD ON";
 
     public static final String EXIT = "EXIT";
     public static final String START_GAME = "START GAME";

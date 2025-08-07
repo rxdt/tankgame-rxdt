@@ -1,6 +1,6 @@
 package zombiegame;
 
-import zombiegame.game.ResourceFactory;
+import zombiegame.game.resources.ResourceFactory;
 import zombiegame.game.GameWorld;
 import zombiegame.menus.EndGamePanel;
 import zombiegame.menus.StartMenuPanel;

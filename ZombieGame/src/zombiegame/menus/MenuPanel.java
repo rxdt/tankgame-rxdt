@@ -2,7 +2,7 @@ package zombiegame.menus;
 
 import zombiegame.GameConstants;
 import zombiegame.Launcher;
-import zombiegame.game.ResourceManager;
+import zombiegame.game.resources.ResourceManager;
 
 import javax.swing.*;
 import java.awt.*;

@@ -31,29 +31,20 @@ public class ZombieControl implements KeyListener {
         if (this.gameWorld.gameIsOver()) return;
         int keyPressed = ke.getKeyCode();
         this.zombie.registerKeyPress(keyPressed);
-        if (keyPressed == up)
-            this.zombie.pressed(Zombie.Direction.UP);
-        if (keyPressed == down)
-            this.zombie.pressed(Zombie.Direction.DOWN);
-        if (keyPressed == left)
-            this.zombie.pressed(Zombie.Direction.LEFT);
-        if (keyPressed == right)
-            this.zombie.pressed(Zombie.Direction.RIGHT);
-        else if (keyPressed == fireKey)
-            this.zombie.fire();
+        if (keyPressed == up) this.zombie.pressed(Zombie.Direction.UP);
+        if (keyPressed == down) this.zombie.pressed(Zombie.Direction.DOWN);
+        if (keyPressed == left) this.zombie.pressed(Zombie.Direction.LEFT);
+        if (keyPressed == right) this.zombie.pressed(Zombie.Direction.RIGHT);
+        else if (keyPressed == fireKey) this.zombie.fire();
     }
 
     @Override
     public void keyReleased(KeyEvent ke) {
         if (this.gameWorld.gameIsOver()) return;
         int keyReleased = ke.getKeyCode();
-        if (keyReleased == up)
-            this.zombie.released(Zombie.Direction.UP);
-        if (keyReleased == down)
-            this.zombie.released(Zombie.Direction.DOWN);
-        if (keyReleased == left)
-            this.zombie.released(Zombie.Direction.LEFT);
-        if (keyReleased == right)
-            this.zombie.released(Zombie.Direction.RIGHT);
+        if (keyReleased == up) this.zombie.released(Zombie.Direction.UP);
+        if (keyReleased == down) this.zombie.released(Zombie.Direction.DOWN);
+        if (keyReleased == left) this.zombie.released(Zombie.Direction.LEFT);
+        if (keyReleased == right) this.zombie.released(Zombie.Direction.RIGHT);
     }
 }

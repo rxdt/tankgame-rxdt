@@ -2,6 +2,10 @@ package zombiegame.game;
 
 import zombiegame.GameConstants;
 import zombiegame.Launcher;
+import zombiegame.game.powerups.*;
+import zombiegame.game.resources.ResourceManager;
+import zombiegame.game.walls.BreakableWall;
+import zombiegame.game.walls.Wall;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,7 +25,7 @@ public class GameWorld extends JPanel implements Runnable {
     private List<Wall> walls;
     private List<PowerUp> powerUps = new ArrayList<>();
     private long lastPowerUpSpawnTime = 0;
-    private BufferedImage healthImg, speedImg, shieldImg;
+    private BufferedImage healthImg, speedImg, shieldImg, laserImg;
     private Boolean gameOver = false;
     private String winnerText;
     private List<GameObject> gameObjects;
@@ -112,11 +116,12 @@ public class GameWorld extends JPanel implements Runnable {
         // Prevent spawning on zombie
         if (spawnArea.intersects(zombie1.getBounds()) || spawnArea.intersects(zombie2.getBounds())) return;
         PowerUp powerUp;
-        int type = (int)(Math.random() * 3); // get a random number between 0–2
+        int type = (int)(Math.random() * 4); // get a random number between 0–2
         switch (type) {
             case 0 -> powerUp = new HealthBoost(x, y, healthImg);
             case 1 -> powerUp = new SpeedBoost(x, y, speedImg);
             case 2 -> powerUp = new ShieldBoost(x, y, shieldImg);
+            case 3 -> powerUp = new LaserBoost(x, y, laserImg);
             default -> throw new IllegalStateException("Unexpected value: " + type);
         }
         powerUp.setSpawnTime(System.currentTimeMillis());
@@ -163,10 +168,12 @@ public class GameWorld extends JPanel implements Runnable {
         BufferedImage z1img = ResourceManager.getInstance().getImage("vfx/zombie1.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
         BufferedImage z2img = ResourceManager.getInstance().getImage("vfx/zombie2.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
         BufferedImage bulletImg = ResourceManager.getInstance().getImage("vfx/bullet.png", GameConstants.GENERIC_SIZE/2, GameConstants.GENERIC_SIZE/2);
+        BufferedImage laserImg = ResourceManager.getInstance().getImage("vfx/ammo.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
         this.healthImg = ResourceManager.getInstance().getImage("vfx/health_brain_powerup.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
         this.speedImg = ResourceManager.getInstance().getImage("vfx/speed_potion_powerup.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
         this.shieldImg = ResourceManager.getInstance().getImage("vfx/shield_injection_powerup.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
-        if (z1img == null || z2img == null || bulletImg == null || healthImg == null || speedImg == null || shieldImg == null) {
+        this.laserImg = ResourceManager.getInstance().getImage("vfx/ammo.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
+        if (z1img == null || z2img == null || bulletImg == null || healthImg == null || speedImg == null || shieldImg == null || this.laserImg == null) {
             System.err.println("Error: could not load png");
             System.exit(-3);
         }
@@ -339,7 +346,7 @@ public class GameWorld extends JPanel implements Runnable {
             if (bullet.isActive() && !target.isExploding() && bulletBounds.intersects(targetBounds)) {
                 bullet.setActive(false);
                 if (!target.isShieldActive()) {
-                    target.onHit();
+                    target.onHit(bullet.getDamage());
                     if (target.getHealth() <= 0 && target.getLives() >= 1) {
                         target.deductALife();
                     }
