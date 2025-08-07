@@ -59,12 +59,34 @@ public class Zombie extends GameObject {
 
     Zombie(float x, float y, float vx, float vy, float angle, BufferedImage img, List<Integer> konamiCode) {
         super(x, y, vx, vy, angle, img);
-        this.boostTimer = System.currentTimeMillis();
         this.bullets = new ArrayList<>();
         this.konamiCode = konamiCode;
+        // reset all variables in between games ending so nothing persists
+        resetZombieState();
     }
 
-   public void pressed(Direction dir) {
+    private void resetZombieState() {
+        this.boostTimer = 0;
+        this.speedMultiplier = 1.0;
+        this.shielded = false;
+        this.laserEnabled = false;
+        this.laserStartTime = 0;
+        this.konamiGlowingOn = false;
+        this.showKonamiMessage = false;
+        this.glowStartTime = 0;
+        this.health = GameConstants.MAX_HEALTH;
+        this.lives = GameConstants.LIVES;
+        this.exploding = false;
+        this.explosionFrame = 0;
+        this.explosionStartTime = 0;
+        this.breathing = false;
+        this.breathingScale = 1.0f;
+        this.breathingIn = true;
+        this.isHit = false;
+        this.hitTime = 0;
+    }
+
+    public void pressed(Direction dir) {
         keysPressed.add(dir);
     }
 
