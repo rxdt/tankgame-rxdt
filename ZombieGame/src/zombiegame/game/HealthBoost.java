@@ -11,6 +11,7 @@ public class HealthBoost extends PowerUp {
 
     @Override
     public void applyTo(Zombie zombie) {
+        ResourceManager.getInstance().playSound("zombies-eating.wav");
         zombie.heal(healAmount);
     }
 }

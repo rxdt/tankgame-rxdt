@@ -37,6 +37,7 @@ public class ResourceFactory {
         ResourceManager.getInstance().getSound("shield_item_pick_up_ding.wav");
         ResourceManager.getInstance().getSound("bullet-shot.wav");
         ResourceManager.getInstance().getSound("zombie_idle.wav");
+        ResourceManager.getInstance().getSound("pick_up.wav");
         // explosions
         explosionFrames = new BufferedImage[5];
         for (int i = 0; i < 5; i++) {

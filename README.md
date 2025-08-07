@@ -71,3 +71,10 @@ Pick up a shield and become invincible to an opponent's bullets <br>
 
 ## Non-breakable Walls - Trees and Shrubs
 <img src="ZombieGame/resources/vfx/bush.png" width="100"><img src="ZombieGame/resources/vfx/log.png" width="75"><img src="ZombieGame/resources/vfx/trees.png" width="50">
+
+## Extra!
+####
+If you don't move your zombie for more than 30 seconds it will grumble and start breathing heavily.
+#### Secret Code
+Green Zombie 1 Easter Egg `W W S S A D A D B A`<br>
+Red Zombie 2 Easter Egg `↑ ↑ ↓ ↓ ← → ← → B A`

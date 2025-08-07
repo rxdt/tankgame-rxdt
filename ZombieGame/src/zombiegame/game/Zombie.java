@@ -7,6 +7,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Zombie extends GameObject {
@@ -43,10 +44,19 @@ public class Zombie extends GameObject {
     private float breathingScale = 1.0f;
     private boolean breathingIn = true;
 
-    Zombie(float x, float y, float vx, float vy, float angle, BufferedImage img) {
+    private final LinkedList<Integer> konamiBuffer = new LinkedList<>();
+    private final List<Integer> konamiCode;
+    private boolean konamiGlowingOn = false;
+    private long glowStartTime = 0;
+    private int glowDuration;
+    private boolean showKonamiMessage = false;
+    private long konamiMessageStartTime = 0;
+
+    Zombie(float x, float y, float vx, float vy, float angle, BufferedImage img, List<Integer> konamiCode) {
         super(x, y, vx, vy, angle, img);
         this.boostTimer = System.currentTimeMillis();
         this.bullets = new ArrayList<>();
+        this.konamiCode = konamiCode;
     }
 
    public void pressed(Direction dir) {
@@ -55,6 +65,27 @@ public class Zombie extends GameObject {
 
     public void released(Direction dir) {
         keysPressed.remove(dir);
+    }
+
+    public void registerKeyPress(int keyCode) {
+        konamiBuffer.add(keyCode);
+        if (konamiBuffer.size() > konamiCode.size()) {
+            konamiBuffer.removeFirst();
+        }
+        if (konamiBuffer.equals(konamiCode)) {
+            this.showKonamiMessage = true;
+            this.konamiMessageStartTime = System.currentTimeMillis();
+            this.heal(100);
+            this.shielded = true;
+            this.speedMultiplier = GameConstants.SPEED_BOOST;
+            this.boostTimer = System.currentTimeMillis();
+            this.glowStartTime = System.currentTimeMillis();
+            this.konamiGlowingOn = true;
+            this.glowDuration = GameConstants.POWERUP_DURATION;
+            ResourceManager.getInstance().playSound("pick_up.wav");
+            System.out.println("KONAMI UNLOCK");
+            konamiBuffer.clear();
+        }
     }
 
     public void update(List<Wall> walls, Zombie otherZombie) {
@@ -120,7 +151,7 @@ public class Zombie extends GameObject {
             breathing = false; // reset breathing state
         } else {
             long idleTime = System.currentTimeMillis() - lastMovementTime;
-            if (idleTime > 25000) {
+            if (idleTime > GameConstants.IDLE_TIME_BEFORE_BREATHE) {
                 if (!breathing) {
                     ResourceManager.getInstance().playSound("zombie_idle.wav");
                     breathing = true;
@@ -257,6 +288,29 @@ public class Zombie extends GameObject {
             g.setColor(new Color(0, 255, 255, 255));
             g.drawOval((int)x - 8, (int)y - 8, img.getWidth() + 16, img.getHeight() + 16);
         }
+        if (konamiGlowingOn) {
+            float alpha = (float)(Math.sin((System.currentTimeMillis() - glowStartTime) / 200.0) * 0.2 + 0.7);
+            g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
+            g.setColor(Color.MAGENTA);
+            g.setStroke(new BasicStroke(4));
+            g.drawOval((int)x-30/2, (int)y-30/2, img.getWidth()+30, img.getHeight()+30);
+            g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f)); // reset
+            g.setStroke(new BasicStroke(1));
+        }
+        if (showKonamiMessage) {
+            long elapsed = System.currentTimeMillis() - konamiMessageStartTime;
+            if (elapsed < GameConstants.KONAMI_MESSAGE_DURATION) {
+                g.setColor(Color.BLACK);
+                g.setFont(new Font("Comic Sans", Font.BOLD, 22));
+                FontMetrics fm = g.getFontMetrics();
+                int messageWidth = fm.stringWidth(GameConstants.SECRET_MESSAGE);
+                int messageX = (int) x - (messageWidth / 2);
+                int messageY = (int) y - 40;
+                g.drawString(GameConstants.SECRET_MESSAGE, messageX, messageY);
+            } else {
+                showKonamiMessage = false;
+            }
+        }
     }
 
     public void setBulletImage(BufferedImage bulletImg) {
@@ -299,7 +353,6 @@ public class Zombie extends GameObject {
     }
 
     public void heal(int healAmount) {
-        ResourceManager.getInstance().playSound("zombies-eating.wav");
         try {
             Thread.sleep(100); // wait 1 second
         } catch (InterruptedException e) {
@@ -332,11 +385,13 @@ public class Zombie extends GameObject {
         if (boostTimer == 0) {
             this.speedMultiplier = 1.0;
             this.shielded = false;
+            this.konamiGlowingOn = false;
             return;
         }
         if (timeElapsed > GameConstants.POWERUP_DURATION) {
             this.speedMultiplier = 1.0;
             this.shielded = false;
+            this.konamiGlowingOn = false;
         }
     }
 

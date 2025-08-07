@@ -30,6 +30,7 @@ public class ZombieControl implements KeyListener {
     public void keyPressed(KeyEvent ke) {
         if (this.gameWorld.gameIsOver()) return;
         int keyPressed = ke.getKeyCode();
+        this.zombie.registerKeyPress(keyPressed);
         if (keyPressed == up)
             this.zombie.pressed(Zombie.Direction.UP);
         if (keyPressed == down)

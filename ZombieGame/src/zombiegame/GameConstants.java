@@ -1,8 +1,11 @@
 package zombiegame;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+
 // don't go bigger than 1080p
 public class GameConstants {
     public static final int GENERIC_SIZE = 64;
@@ -30,8 +33,27 @@ public class GameConstants {
     public static final long ANIMATION_DURATION = 300;
     public static final double SPEED_BOOST = 3.0;
     public static final float BULLET_SPEED = 10f;
+    public static final int IDLE_TIME_BEFORE_BREATHE = 30000;
+    public static final int KONAMI_MESSAGE_DURATION = 2000;
+    public static final String SECRET_MESSAGE = "Secret code unlock";
 
     public static final String EXIT = "EXIT";
     public static final String START_GAME = "START GAME";
     public static final String PLAY_AGAIN = "PLAY AGAIN";
+
+    public static final List<Integer> KONAMI_CODE_ARROW = List.of(
+            KeyEvent.VK_UP, KeyEvent.VK_UP,
+            KeyEvent.VK_DOWN, KeyEvent.VK_DOWN,
+            KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT,
+            KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT,
+            KeyEvent.VK_B, KeyEvent.VK_A
+    );
+
+    public static final List<Integer> KONAMI_CODE_WASD = List.of(
+            KeyEvent.VK_W, KeyEvent.VK_W,
+            KeyEvent.VK_S, KeyEvent.VK_S,
+            KeyEvent.VK_A, KeyEvent.VK_D,
+            KeyEvent.VK_A, KeyEvent.VK_D,
+            KeyEvent.VK_B, KeyEvent.VK_A
+    );
 }
