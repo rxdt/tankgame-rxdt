@@ -40,7 +40,7 @@ The jar folder will store the built jar `jar/tankgame-rxdt.jar`
 ```
 ## Alternate steps to run the project - run the JAR directly
 ```
->  java -jar tankgame-rxdt/jar/tankgame-rxdt.jar
+>  java -jar jar/tankgame-rxdt.jar
 ```
 
 ## Controls to play Zombie Wars:

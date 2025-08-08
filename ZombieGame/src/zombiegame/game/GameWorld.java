@@ -38,12 +38,6 @@ public class GameWorld extends JPanel implements Runnable {
     }
 
     public void startGameThread() {
-        System.out.println("=== Creating New Game Thread ===");
-        System.out.println("GameWorld instance: " + this);
-        System.out.println("GameThread - isAlive: " + (gameThread != null && gameThread.isAlive()));
-        Thread.getAllStackTraces().keySet().stream()
-                .filter(t -> t.getName().contains("GameThread"))
-                .forEach(t -> System.out.println(t.getName() + " - alive: " + t.isAlive()));
         if (gameThread != null && gameThread.isAlive()) {
             try {
                 running = false;
@@ -86,7 +80,6 @@ public class GameWorld extends JPanel implements Runnable {
         } catch (InterruptedException ignored) {
             System.out.println(ignored);
         }
-        System.out.println("GameThread has exited.");
     }
 
     public void stop() {
@@ -179,8 +172,6 @@ public class GameWorld extends JPanel implements Runnable {
     * Reset game to its initial state.
     */
     public void resetGame() {
-        System.out.println("initializeGame() called");
-        System.out.println("KeyListeners: " + this.getKeyListeners().length);
         this.running = false;
         for (KeyListener kl : this.getKeyListeners()) {
             this.removeKeyListener(kl);
