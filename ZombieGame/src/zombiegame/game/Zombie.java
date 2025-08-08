@@ -352,6 +352,7 @@ public class Zombie extends GameObject {
 
     public void fire() {
         resetPowerUps();
+        if (this.lives <= 0 || this.exploding) return;
         float bulletAngle = (angle + facingOffset + 360) % 360;
         float spawnDistance = img.getHeight() / 2f;
         float bulletX = x + img.getWidth() / 2f - bulletImg.getWidth() / 2f +

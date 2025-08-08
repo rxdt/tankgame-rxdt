@@ -43,7 +43,7 @@ The jar folder will store the built jar `jar/tankgame-rxdt.jar`
 >  java -jar tankgame-rxdt/jar/tankgame-rxdt.jar
 ```
 
-## Controls to play Zombie Game:
+## Controls to play Zombie Wars:
 
 |               | Player 1 - Green | Player 2 - Red |
 |---------------|------------------|----------------|
@@ -65,6 +65,10 @@ Pick up a shield and become invincible to an opponent's bullets <br>
 #### SPEED
 3X your speed with a battery boost <br>
 <img src="ZombieGame/resources/vfx/speed_potion_powerup.png" width="100"> 
+
+#### LASER BEAMS
+Damage your opponent even more with laser ammo!<br>
+<img src="ZombieGame/resources/vfx/ammo.png" width="50">
 
 ## Breakable Walls - Flowers 
 <img src="ZombieGame/resources/vfx/sunflower.png" width="50"><img src="ZombieGame/resources/vfx/daisies.png" width="50"><img src="ZombieGame/resources/vfx/blue_flowers.png" width="50"><img src="ZombieGame/resources/vfx/roses.png" width="50">

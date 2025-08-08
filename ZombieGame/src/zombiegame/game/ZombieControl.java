@@ -35,7 +35,7 @@ public class ZombieControl implements KeyListener {
         if (keyPressed == down) this.zombie.pressed(Zombie.Direction.DOWN);
         if (keyPressed == left) this.zombie.pressed(Zombie.Direction.LEFT);
         if (keyPressed == right) this.zombie.pressed(Zombie.Direction.RIGHT);
-        else if (keyPressed == fireKey) this.zombie.fire();
+        else if (keyPressed == fireKey && this.zombie.getLives() > 0) this.zombie.fire();
     }
 
     @Override
