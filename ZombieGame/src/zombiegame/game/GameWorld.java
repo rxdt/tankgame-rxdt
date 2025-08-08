@@ -32,6 +32,7 @@ public class GameWorld extends JPanel implements Runnable {
 
     public GameWorld(Launcher launcher) {
         this.launcher = launcher;
+        InitializeGame();
     }
 
     @Override
@@ -116,7 +117,7 @@ public class GameWorld extends JPanel implements Runnable {
         // Prevent spawning on zombie
         if (spawnArea.intersects(zombie1.getBounds()) || spawnArea.intersects(zombie2.getBounds())) return;
         PowerUp powerUp;
-        int type = (int)(Math.random() * 4); // get a random number between 0–2
+        int type = (int)(Math.random() * 4); // get a random number between 0–3
         switch (type) {
             case 0 -> powerUp = new HealthBoost(x, y, healthImg);
             case 1 -> powerUp = new SpeedBoost(x, y, speedImg);

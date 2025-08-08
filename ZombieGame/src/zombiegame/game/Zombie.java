@@ -19,8 +19,8 @@ public class Zombie extends GameObject {
 
     private float vx; // useful for simple approach to collisions, velocity x distance traveled over time
     private float vy; // useful for simple approach to collisions, velocity y
-    private float R = 5; // speed
-    private float ROTATIONSPEED = 3.0f;
+    private float R = GameConstants.DEFAULT_SPEED; // speed
+    private float ROTATIONSPEED = GameConstants.ROTATION_SPEED;
 
     private BufferedImage bulletImg;
     private List<Bullet> bullets;
@@ -42,7 +42,6 @@ public class Zombie extends GameObject {
     private static final int EXPLOSION_FRAME_INTERVAL = 200;
     private static final int RESPAWN_DELAY = 2500;
     private long explosionStartTime = 0;
-    private long laserStartTime = 0;
 
     private long lastMovementTime = System.currentTimeMillis();
     private boolean breathing = false;
@@ -70,7 +69,6 @@ public class Zombie extends GameObject {
         this.speedMultiplier = 1.0;
         this.shielded = false;
         this.laserEnabled = false;
-        this.laserStartTime = 0;
         this.konamiGlowingOn = false;
         this.showKonamiMessage = false;
         this.glowStartTime = 0;
@@ -84,6 +82,7 @@ public class Zombie extends GameObject {
         this.breathingIn = true;
         this.isHit = false;
         this.hitTime = 0;
+        this.ROTATIONSPEED = GameConstants.ROTATION_SPEED;
     }
 
     public void pressed(Direction dir) {
@@ -105,12 +104,11 @@ public class Zombie extends GameObject {
             this.heal(100);
             this.shielded = true;
             this.speedMultiplier = GameConstants.SPEED_BOOST;
-            this.boostTimer = System.currentTimeMillis();
             this.glowStartTime = System.currentTimeMillis();
             this.konamiGlowingOn = true;
             this.glowDuration = GameConstants.POWERUP_DURATION;
             this.laserEnabled = true;
-            this.laserStartTime = System.currentTimeMillis();
+            this.boostTimer = System.currentTimeMillis();
             ResourceManager.getInstance().playSound("pick_up.wav");
             System.out.println("KONAMI UNLOCK");
             konamiBuffer.clear();
@@ -152,6 +150,7 @@ public class Zombie extends GameObject {
                     breathing = false;
                     breathingScale = 1.0f;
                     breathingIn = true;
+                    laserEnabled = false;
                 }
             }
             return;
@@ -352,6 +351,7 @@ public class Zombie extends GameObject {
     }
 
     public void fire() {
+        resetPowerUps();
         float bulletAngle = (angle + facingOffset + 360) % 360;
         float spawnDistance = img.getHeight() / 2f;
         float bulletX = x + img.getWidth() / 2f - bulletImg.getWidth() / 2f +
@@ -359,7 +359,8 @@ public class Zombie extends GameObject {
         float bulletY = y + img.getHeight() / 2f - bulletImg.getHeight() / 2f +
                 (float)(spawnDistance * Math.sin(Math.toRadians(bulletAngle)));
         Bullet newBullet = new Bullet(bulletX, bulletY, bulletAngle, bulletImg, laserEnabled);
-        if (laserEnabled) {
+        if (this.laserEnabled) {
+            System.out.println("Laser is enabled");
             ResourceManager.getInstance().playSound("laser_shot.wav");
         } else {
             ResourceManager.getInstance().playSound("bullet-shot.wav");
@@ -417,19 +418,11 @@ public class Zombie extends GameObject {
 
     private void resetPowerUps() {
         long timeElapsed = System.currentTimeMillis() - boostTimer;
-        if (boostTimer == 0) {
-            this.speedMultiplier = 1.0;
-            this.shielded = false;
-            this.konamiGlowingOn = false;
-            return;
-        }
         if (timeElapsed > GameConstants.POWERUP_DURATION) {
             this.speedMultiplier = 1.0;
             this.shielded = false;
             this.konamiGlowingOn = false;
-        }
-        if (laserEnabled && System.currentTimeMillis() - laserStartTime > GameConstants.POWERUP_DURATION) {
-            laserEnabled = false;
+            this.laserEnabled = false;
         }
     }
 
@@ -463,6 +456,6 @@ public class Zombie extends GameObject {
         System.out.println("Zombie laser enabled");
         ResourceManager.getInstance().playSound("laser_pickup.wav");
         this.laserEnabled = true;
-        this.laserStartTime = System.currentTimeMillis();
+        this.boostTimer = System.currentTimeMillis();
     }
 }

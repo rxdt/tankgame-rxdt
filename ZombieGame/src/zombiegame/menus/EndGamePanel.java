@@ -2,6 +2,7 @@ package zombiegame.menus;
 
 import zombiegame.GameConstants;
 import zombiegame.Launcher;
+import zombiegame.game.GameWorld;
 import zombiegame.game.resources.ResourceManager;
 
 import java.awt.*;
@@ -51,8 +52,8 @@ public class EndGamePanel extends MenuPanel {
     protected void onStartGamePressed() {
         launcher.getGamePanel().resetGame();
         new Thread(launcher.getGamePanel()).start();
-        ResourceManager.getInstance().stopAllSounds();
         launcher.setFrame("game");
+        ResourceManager.getInstance().stopAllSounds();
         ResourceManager.getInstance().playLoopedSound("Plants vs. Zombies - Ultimate Battle.wav");
     }
 }

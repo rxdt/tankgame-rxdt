@@ -10,7 +10,6 @@ import java.awt.*;
 import java.awt.event.WindowEvent;
 
 public class Launcher {
-//    ConcurrentMap<Integer,GameWorld> map = new ConcurrentHashMap<Integer, GameWorld>();
     /*
      * Main panel in JFrame, the layout of this panel
      * will be card layout, this will allow us to switch

@@ -20,8 +20,8 @@ public class Bullet extends GameObject {
     }
 
     public void update() {
-        x = (float) (x + GameConstants.BULLET_SPEED * Math.cos(Math.toRadians(angle)));
-        y = (float) (y + GameConstants.BULLET_SPEED * Math.sin(Math.toRadians(angle)));
+        x = (float) (x + this.speed * Math.cos(Math.toRadians(angle)));
+        y = (float) (y + this.speed * Math.sin(Math.toRadians(angle)));
     }
 
     public void draw(Graphics2D g) {

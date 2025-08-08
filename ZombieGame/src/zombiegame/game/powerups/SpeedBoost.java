@@ -12,7 +12,7 @@ public class SpeedBoost extends PowerUp {
 
     @Override
     public void applyTo(Zombie zombie) {
-        zombie.setSpeedBoost(GameConstants.SPEED_BOOST); // triple speeed
+        zombie.setSpeedBoost(GameConstants.SPEED_BOOST); // triple speed
         zombie.setBoostTimer();
     }
 }
