@@ -94,7 +94,7 @@ public class Launcher {
                 this.cl.show(mainPanel, type);         // show GameWorld panel
                 this.jf.setVisible(true);              // reveal the window again
                 this.gamePanel.requestFocusInWindow(); // give GameWorld panel keyboard focus
-                (new Thread(this.gamePanel)).start();  // start game loop
+                this.gamePanel.startGameThread();      // thread-safe start game loop
             }
             case "end" -> {
                 this.jf.setSize(GameConstants.GAME_SCREEN_WIDTH, GameConstants.GAME_SCREEN_HEIGHT);

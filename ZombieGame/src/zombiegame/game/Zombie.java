@@ -64,7 +64,7 @@ public class Zombie extends GameObject {
         resetZombieState();
     }
 
-    private void resetZombieState() {
+    public void resetZombieState() {
         this.boostTimer = 0;
         this.speedMultiplier = 1.0;
         this.shielded = false;
@@ -360,7 +360,6 @@ public class Zombie extends GameObject {
                 (float)(spawnDistance * Math.sin(Math.toRadians(bulletAngle)));
         Bullet newBullet = new Bullet(bulletX, bulletY, bulletAngle, bulletImg, laserEnabled);
         if (this.laserEnabled) {
-            System.out.println("Laser is enabled");
             ResourceManager.getInstance().playSound("laser_shot.wav");
         } else {
             ResourceManager.getInstance().playSound("bullet-shot.wav");

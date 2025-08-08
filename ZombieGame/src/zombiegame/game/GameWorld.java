@@ -10,6 +10,7 @@ import zombiegame.game.walls.Wall;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
@@ -28,17 +29,40 @@ public class GameWorld extends JPanel implements Runnable {
     private BufferedImage healthImg, speedImg, shieldImg, laserImg;
     private Boolean gameOver = false;
     private String winnerText;
-    private List<GameObject> gameObjects;
+    private volatile boolean running = true;
+    private Thread gameThread;
 
     public GameWorld(Launcher launcher) {
         this.launcher = launcher;
         InitializeGame();
     }
 
+    public void startGameThread() {
+        System.out.println("=== Creating New Game Thread ===");
+        System.out.println("GameWorld instance: " + this);
+        System.out.println("GameThread - isAlive: " + (gameThread != null && gameThread.isAlive()));
+        Thread.getAllStackTraces().keySet().stream()
+                .filter(t -> t.getName().contains("GameThread"))
+                .forEach(t -> System.out.println(t.getName() + " - alive: " + t.isAlive()));
+        if (gameThread != null && gameThread.isAlive()) {
+            try {
+                running = false;
+                gameThread.join(); // ensure old thread stops
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        running = true;
+        gameThread = new Thread(this, "GameThread");
+        gameThread.start();
+    }
+
     @Override
     public void run() {
+        this.running = true;
+        Thread.currentThread().setName("GameThread");
         try {
-            while (true) {
+            while (running) {
                 if (!gameOver) {
                     this.zombie1.update(walls, zombie2); // update zombies
                     this.zombie2.update(walls, zombie1);
@@ -62,6 +86,11 @@ public class GameWorld extends JPanel implements Runnable {
         } catch (InterruptedException ignored) {
             System.out.println(ignored);
         }
+        System.out.println("GameThread has exited.");
+    }
+
+    public void stop() {
+        this.running = false;
     }
 
     private void updatePowerUps() {
@@ -83,6 +112,8 @@ public class GameWorld extends JPanel implements Runnable {
             ResourceManager.getInstance().playLoopedSound("Plants vs. Zombies - Moongrains.wav");
             this.winnerText = zombie1Lives > zombie2Lives ? "Green zombie has won!" : "Red zombie has won!";
             launcher.getEndGamePanel().setWinnerText(this.winnerText);
+            zombie1.resetZombieState();
+            zombie2.resetZombieState();
             Timer timer = new Timer(3000, e -> launcher.setFrame("end"));
             timer.setRepeats(false);
             timer.start();
@@ -148,8 +179,15 @@ public class GameWorld extends JPanel implements Runnable {
     * Reset game to its initial state.
     */
     public void resetGame() {
+        System.out.println("initializeGame() called");
+        System.out.println("KeyListeners: " + this.getKeyListeners().length);
+        this.running = false;
+        for (KeyListener kl : this.getKeyListeners()) {
+            this.removeKeyListener(kl);
+        }
         this.gameOver = false;
         InitializeGame(); // Resets the zombie and reinitializes the world
+        this.repaint();
     }
 
     /**
@@ -169,7 +207,6 @@ public class GameWorld extends JPanel implements Runnable {
         BufferedImage z1img = ResourceManager.getInstance().getImage("vfx/zombie1.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
         BufferedImage z2img = ResourceManager.getInstance().getImage("vfx/zombie2.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
         BufferedImage bulletImg = ResourceManager.getInstance().getImage("vfx/bullet.png", GameConstants.GENERIC_SIZE/2, GameConstants.GENERIC_SIZE/2);
-        BufferedImage laserImg = ResourceManager.getInstance().getImage("vfx/ammo.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
         this.healthImg = ResourceManager.getInstance().getImage("vfx/health_brain_powerup.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
         this.speedImg = ResourceManager.getInstance().getImage("vfx/speed_potion_powerup.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
         this.shieldImg = ResourceManager.getInstance().getImage("vfx/shield_injection_powerup.png", GameConstants.GENERIC_SIZE, GameConstants.GENERIC_SIZE);
@@ -183,12 +220,13 @@ public class GameWorld extends JPanel implements Runnable {
         zombie2.setFacingOffset(180);
         zombie1.setBulletImage(bulletImg);
         zombie2.setBulletImage(bulletImg);
-        this.addKeyListener( //  listen to key events on the panel, not the jframe
-            new ZombieControl(zombie1, KeyEvent.VK_W, KeyEvent.VK_S, KeyEvent.VK_A, KeyEvent.VK_D, KeyEvent.VK_SPACE, this)
-        );
-        this.addKeyListener(
-            new ZombieControl(zombie2, KeyEvent.VK_DOWN, KeyEvent.VK_UP, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_ENTER, this)
-        );
+
+        for (KeyListener kl : this.getKeyListeners()) {
+            this.removeKeyListener(kl);
+        }
+        this.addKeyListener(new ZombieControl(zombie1, KeyEvent.VK_W, KeyEvent.VK_S, KeyEvent.VK_A, KeyEvent.VK_D, KeyEvent.VK_SPACE, this));
+        this.addKeyListener(new ZombieControl(zombie2, KeyEvent.VK_DOWN, KeyEvent.VK_UP, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_ENTER, this));
+
         try {
             loadMap();
         } catch (IOException e) {
@@ -260,8 +298,12 @@ public class GameWorld extends JPanel implements Runnable {
         }
         zombie1.draw(buffer);
         zombie2.draw(buffer);
-        for (Bullet b : zombie1.getBullets()) b.draw(buffer);
-        for (Bullet b : zombie2.getBullets()) b.draw(buffer);
+        synchronized (zombie1.getBullets()) {
+            for (Bullet b : zombie1.getBullets()) b.draw(buffer);
+        }
+        synchronized (zombie2.getBullets()) {
+            for (Bullet b : zombie2.getBullets()) b.draw(buffer);
+        }
         synchronized (powerUps) {
             for (PowerUp p : powerUps) {
                 p.draw(buffer);
@@ -364,7 +406,7 @@ public class GameWorld extends JPanel implements Runnable {
         synchronized (zombie1.getBullets()) {
             zombie1.getBullets().removeIf(b -> !b.isActive());
         }
-        synchronized (zombie1.getBullets()) {
+        synchronized (zombie2.getBullets()) {
             zombie2.getBullets().removeIf(b -> !b.isActive());
         }
     }

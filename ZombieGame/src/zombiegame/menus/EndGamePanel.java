@@ -50,8 +50,10 @@ public class EndGamePanel extends MenuPanel {
 
     @Override
     protected void onStartGamePressed() {
-        launcher.getGamePanel().resetGame();
-        new Thread(launcher.getGamePanel()).start();
+        GameWorld gamePanel = launcher.getGamePanel();
+        gamePanel.stop();
+        gamePanel.resetGame();
+        gamePanel.startGameThread();
         launcher.setFrame("game");
         ResourceManager.getInstance().stopAllSounds();
         ResourceManager.getInstance().playLoopedSound("Plants vs. Zombies - Ultimate Battle.wav");
