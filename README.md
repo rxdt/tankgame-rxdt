@@ -1,26 +1,19 @@
-# csc413-zombiegame
+# Zombie Wars
 <img src="ZombieGame/resources/vfx/title.png" width="300">
 
-| Student Information |                 |
-|:-------------------:|-----------------|
-|  Student Name       | Roxana del Toro |
-|  Student Email      | rxdt@sfsu.edu   |
+|    Information     |                 |
+|:------------------:|-----------------|
+|         By         | Roxana del Toro |
+|       Email        | rxdt@sfsu.edu   |
 
 
 ## Purpose of jar Folder 
-The jar folder will store the built jar `jar/tankgame-rxdt.jar`
-
-`THIS FOLDER CAN NOT BE DELETED OR MOVED`
-
-# Required Information when Submitting Tank Game
+The jar folder contains the built jar `jar/tankgame-rxdt.jar`
 
 ## Version of Java Used: 24.0.1
 
 ## IDE used: 
 ### IntelliJ IDEA 2025.1.2 (Ultimate Edition) on Macbook Pro
-
-## Steps to Import project into IDE:
-`git clone git@github.com:csc413-SFSU-SU2025/tankgame-rxdt.git`
 
 ## Steps to Manually Build Project:
 ```
@@ -82,3 +75,7 @@ If you don't move your zombie for more than 30 seconds it will grumble and start
 #### Secret Code
 Green Zombie 1 Easter Egg `W W S S A D A D B A`<br>
 Red Zombie 2 Easter Egg `↑ ↑ ↓ ↓ ← → ← → B A`
+#### Start Game
+The zombies will start off facing each other. This required extra attention to setting angles and directions for each zombie and bullets.
+#### End Game Panel
+Once a zombie has lost three lives the end game panel will show the two zombies with the loser in a woeful state.  
